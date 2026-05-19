@@ -1,0 +1,16 @@
+server:
+  port: 8080
+  forward-headers-strategy: framework
+  servlet:
+    context-path: /api/v1 # Buena pr�ctica para versionar la API desde el inicio
+
+spring:
+  application:
+    name: api-precompromisos-core
+  profiles:
+    active: qa # Por defecto arranca en QA
+
+logging:
+  level:
+    root: INFO
+    mx.gob.senado.tesoreria: DEBUG

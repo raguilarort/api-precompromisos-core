@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    # Cadena clásica para Oracle 11g (Service Name o SID). Ajusta la IP y el puerto.
+    url: jdbc:oracle:thin:@192.168.xx.xxx:1521:MAYO2026
+    username: [USER_PRECOMPROMISOS]
+    password: [123456789]
+    driver-class-name: oracle.jdbc.OracleDriver
+    hikari:
+      maximum-pool-size: 10
+
+app:
+  jwt:
+    # Esta llave solo sirve para QA. Da igual si queda en Git.
+    secret: T3stS3cr3tK3yF0rQAD3v3l0pm3nt0nly2026!
+    expiration-milliseconds: 3600000 # 1 hora
