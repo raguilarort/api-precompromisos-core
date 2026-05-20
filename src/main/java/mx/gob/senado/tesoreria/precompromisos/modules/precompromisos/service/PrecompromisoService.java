@@ -1,9 +1,6 @@
 package mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.service;
 
-import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.CambioEstatusRequestDTO;
-import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.ClavePresupuestariaRequestDTO;
-import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.DisponibilidadDTO;
-import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.PrecompromisoRequestDTO;
+import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.*;
 import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.repository.PrecompromisoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,6 +27,13 @@ public class PrecompromisoService {
 
         // Llamamos al repositorio transaccional
         return precompromisoRepository.crearPrecompromisoCompleto(request, numEmpleado);
+    }
+
+    @PreAuthorize("hasAnyRole('CAPTURISTA', 'REVISOR', 'AUTORIZADOR', 'ADMIN')")
+    public List<SeguimientoDTO> consultarHistorial(Long idPrecompromiso) {
+        // Podrías agregar una validación para asegurar que el precompromiso existe
+        // antes de buscar su historial, si lo consideras necesario.
+        return precompromisoRepository.obtenerHistorial(idPrecompromiso);
     }
 
     @Transactional

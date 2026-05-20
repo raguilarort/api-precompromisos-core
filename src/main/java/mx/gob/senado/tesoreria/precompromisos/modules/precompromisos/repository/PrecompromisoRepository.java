@@ -3,6 +3,7 @@ package mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.repository
 import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.ClavePresupuestariaRequestDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.DisponibilidadDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.PrecompromisoRequestDTO;
+import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.SeguimientoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SqlOutParameter;
@@ -137,7 +138,34 @@ public class PrecompromisoRepository {
         disp.setDisponibleNov(10000000.0);
         disp.setDisponibleDic(10000000.0);
 
-
         return disp;
+    }
+
+    public List<SeguimientoDTO> obtenerHistorial(Long idPrecompromiso) {
+        String sql = """
+            SELECT s.id_seguimiento, s.id_estatus, e.descripcion AS estatus_desc,
+                   s.num_empleado, u.email, s.fecha_movimiento, s.comentarios
+            FROM RF_TR_PRECOMP_SEGUIMIENTO s
+            INNER JOIN RF_TC_ESTATUS_PRECOMP e ON s.id_estatus = e.id_estatus
+            INNER JOIN RF_TR_PRECOMP_USUARIOS u ON s.num_empleado = u.num_empleado
+            WHERE s.id_precompromiso = ?
+            ORDER BY s.fecha_movimiento DESC
+        """;
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            SeguimientoDTO dto = new SeguimientoDTO();
+            dto.setIdSeguimiento(rs.getLong("id_seguimiento"));
+            dto.setIdEstatus(rs.getInt("id_estatus"));
+            dto.setEstatusDesc(rs.getString("estatus_desc"));
+            dto.setNumEmpleado(rs.getString("num_empleado"));
+            dto.setEmail(rs.getString("email"));
+
+            if (rs.getTimestamp("fecha_movimiento") != null) {
+                dto.setFechaMovimiento(rs.getTimestamp("fecha_movimiento").toLocalDateTime());
+            }
+
+            dto.setComentarios(rs.getString("comentarios"));
+            return dto;
+        }, idPrecompromiso);
     }
 }
