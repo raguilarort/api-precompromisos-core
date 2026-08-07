@@ -1,8 +1,10 @@
-package mx.gob.senado.tesoreria.precompromisos.security;
+package mx.gob.senado.tesoreria.precompromisos.modules.auth.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import mx.gob.senado.tesoreria.precompromisos.modules.usuarios.dto.UsuarioLoginDTO;
-import mx.gob.senado.tesoreria.precompromisos.modules.usuarios.repository.UsuarioRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import mx.gob.senado.tesoreria.precompromisos.modules.auth.dto.AuthRequestDTO;
+import mx.gob.senado.tesoreria.precompromisos.modules.auth.dto.UserInfoDTO;
+import mx.gob.senado.tesoreria.precompromisos.modules.auth.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,14 +18,11 @@ import java.util.Map;
 public class AuthController {
 
     @Autowired
-    private JwtTokenProvider tokenProvider;
-
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private AuthService authService;
 
     @PostMapping("/login-microsoft")
-    public ResponseEntity<?> loginConEntraId(@RequestBody Map<String, String> payload) {
-        String msToken = payload.get("idToken");
+    public ResponseEntity<?> loginConEntraId(@RequestBody AuthRequestDTO payload, HttpServletRequest request) {
+        String msToken = payload.microsoftToken();
 
         if (msToken == null || msToken.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Falta el idToken de Microsoft"));
@@ -49,29 +48,18 @@ public class AuthController {
                         .body(Map.of("error", "El token de Entra ID no contiene un correo electrónico válido"));
             }
 
-            // 2. Buscar en Oracle si el usuario existe y está activo
-            UsuarioLoginDTO dbUser = usuarioRepository.obtenerDatosLogin(emailEntraId);
+            // 2. Extraer datos de auditoría para la base de datos
+            String ip = request.getHeader("X-Forwarded-For");
+            if (ip == null || ip.isEmpty()) ip = request.getRemoteAddr();
+            String userAgent = request.getHeader("User-Agent");
 
-            if (dbUser == null) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                        .body(Map.of("error", "Usuario no registrado o inactivo en el sistema institucional"));
-            }
+            // 3. Orquestar el login a través del Service
+            UserInfoDTO userInfo = authService.procesarLogin(emailEntraId, ip, userAgent);
 
-            // 3. Generar TU token interno con las reglas de negocio On-Premise
-            String tokenInterno = tokenProvider.generateToken(
-                    dbUser.getEmail(),
-                    dbUser.getRol(),
-                    dbUser.getUnidadesPermitidas(),
-                    dbUser.getNumEmpleado()
-            );
-
-            // 4. Retornar el token y los datos básicos al frontend
-            return ResponseEntity.ok(Map.of(
-                    "accessToken", tokenInterno,
-                    "tokenType", "Bearer",
-                    "usuario", dbUser
-            ));
-
+            return ResponseEntity.ok(userInfo);
+        } catch (SecurityException se) {
+            // El usuario no existe o está inactivo (Arrojado por el Stored Procedure)
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", se.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Error procesando la autenticación: " + e.getMessage()));
