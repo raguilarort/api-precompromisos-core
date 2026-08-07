@@ -1,4 +1,4 @@
-package mx.gob.senado.tesoreria.precompromisos.security.provider;
+package mx.gob.senado.tesoreria.precompromisos.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

@@ -1,4 +1,4 @@
-package mx.gob.senado.tesoreria.precompromisos.security.dto;
+package mx.gob.senado.tesoreria.precompromisos.modules.auth.dto;
 
 import java.util.List;
 

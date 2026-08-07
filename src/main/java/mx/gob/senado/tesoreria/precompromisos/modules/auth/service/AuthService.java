@@ -1,8 +1,8 @@
-package mx.gob.senado.tesoreria.precompromisos.security.service;
+package mx.gob.senado.tesoreria.precompromisos.modules.auth.service;
 
-import mx.gob.senado.tesoreria.precompromisos.security.dto.UserInfoDTO;
-import mx.gob.senado.tesoreria.precompromisos.security.provider.JwtTokenProvider;
-import mx.gob.senado.tesoreria.precompromisos.security.repository.AuthRepository;
+import mx.gob.senado.tesoreria.precompromisos.modules.auth.dto.UserInfoDTO;
+import mx.gob.senado.tesoreria.precompromisos.security.JwtTokenProvider;
+import mx.gob.senado.tesoreria.precompromisos.modules.auth.repository.AuthRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

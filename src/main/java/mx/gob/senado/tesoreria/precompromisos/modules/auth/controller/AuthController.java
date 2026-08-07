@@ -1,10 +1,10 @@
-package mx.gob.senado.tesoreria.precompromisos.security.controller;
+package mx.gob.senado.tesoreria.precompromisos.modules.auth.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
-import mx.gob.senado.tesoreria.precompromisos.security.dto.AuthRequestDTO;
-import mx.gob.senado.tesoreria.precompromisos.security.dto.UserInfoDTO;
-import mx.gob.senado.tesoreria.precompromisos.security.service.AuthService;
+import mx.gob.senado.tesoreria.precompromisos.modules.auth.dto.AuthRequestDTO;
+import mx.gob.senado.tesoreria.precompromisos.modules.auth.dto.UserInfoDTO;
+import mx.gob.senado.tesoreria.precompromisos.modules.auth.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
