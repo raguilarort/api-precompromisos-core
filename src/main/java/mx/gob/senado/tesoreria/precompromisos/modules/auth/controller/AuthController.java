@@ -5,6 +5,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import mx.gob.senado.tesoreria.precompromisos.modules.auth.dto.AuthRequestDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.auth.dto.UserInfoDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.auth.service.AuthService;
+import mx.gob.senado.tesoreria.precompromisos.security.audit.SecurityAuditService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,15 +19,24 @@ import java.util.Map;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final SecurityAuditService auditService;
 
     @Autowired
     private AuthService authService;
+
+    public AuthController(SecurityAuditService auditService /*, otros */) {
+        this.auditService = auditService;
+    }
 
     @PostMapping("/login-microsoft")
     public ResponseEntity<?> loginConEntraId(@RequestBody AuthRequestDTO payload, HttpServletRequest request) {
         String msToken = payload.microsoftToken();
 
         if (msToken == null || msToken.isEmpty()) {
+            auditService.registrarAlerta("AUTH_FAILED", "MISSING_TOKEN", "Intento de login sin idToken", request);
+
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Falta el idToken de Microsoft"));
         }
 
@@ -44,8 +56,10 @@ public class AuthController {
             String emailEntraId = (String) tokenData.getOrDefault("preferred_username", tokenData.get("email"));
 
             if (emailEntraId == null) {
+                auditService.registrarAlerta("AUTH_FAILED", "INVALID_TOKEN", "El token no contiene un correo electrónico válido", request);
+
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(Map.of("error", "El token de Entra ID no contiene un correo electrónico válido"));
+                        .body(Map.of("error", "El token de Entra ID no es válido"));
             }
 
             // 2. Extraer datos de auditoría para la base de datos
