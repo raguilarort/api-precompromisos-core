@@ -17,7 +17,6 @@ public class UsuarioConsultasRepository {
     private final SimpleJdbcCall getUsuariosCall;
     private final SimpleJdbcCall getRolesUsuarioCall;
     private final SimpleJdbcCall getUnidadesUsuarioCall;
-    private final SimpleJdbcCall getCatalogoRolesCall;
 
     public UsuarioConsultasRepository(DataSource dataSource) {
         String paquete = "PKG_PRECOMP_CONSULTAS_ADMIN";
@@ -64,18 +63,6 @@ public class UsuarioConsultasRepository {
                                 rs.getString("FECHA_ASIGNACION")
                         ))
                 );
-
-        this.getCatalogoRolesCall = new SimpleJdbcCall(dataSource)
-                .withCatalogName(paquete)
-                .withProcedureName("SP_GET_CATALOGO_ROLES")
-                .withoutProcedureColumnMetaDataAccess()
-                .declareParameters(
-                        new SqlOutParameter("p_cursor", Types.REF_CURSOR, (rs, rowNum) -> new RolCatalogoDTO(
-                                rs.getLong("ID_ROL"),
-                                rs.getString("CLAVE"),
-                                rs.getString("DESCRIPCION")
-                        ))
-                );
     }
 
     public List<UsuarioResponseDTO> getUsuarios() {
@@ -91,10 +78,5 @@ public class UsuarioConsultasRepository {
     public List<UsuarioUnidadResponseDTO> getUnidadesUsuario(Long idUsuario) {
         Map<String, Object> out = getUnidadesUsuarioCall.execute(new MapSqlParameterSource("p_id_usuario", idUsuario));
         return (List<UsuarioUnidadResponseDTO>) out.get("p_cursor");
-    }
-
-    public List<RolCatalogoDTO> getCatalogoRoles() {
-        Map<String, Object> out = getCatalogoRolesCall.execute();
-        return (List<RolCatalogoDTO>) out.get("p_cursor");
     }
 }

@@ -27,7 +27,5 @@ public class UsuarioConsultasService {
         return repository.getUnidadesUsuario(idUsuario);
     }
 
-    public List<RolCatalogoDTO> obtenerCatalogoRoles() {
-        return repository.getCatalogoRoles();
-    }
+
 }

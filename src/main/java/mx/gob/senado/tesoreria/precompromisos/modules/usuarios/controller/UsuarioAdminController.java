@@ -41,11 +41,6 @@ public class UsuarioAdminController {
         return ResponseEntity.ok(consultasService.listarUnidadesPorUsuario(idUsuario));
     }
 
-    @GetMapping("/catalogos/roles")
-    public ResponseEntity<List<RolCatalogoDTO>> obtenerCatalogoRoles() {
-        return ResponseEntity.ok(consultasService.obtenerCatalogoRoles());
-    }
-
     @PostMapping("/upsert")
     public ResponseEntity<AdminResponseDTO> upsertUsuario(@RequestBody UsuarioUpsertRequestDTO dto) {
         AdminResponseDTO response = adminService.upsertUsuario(dto);

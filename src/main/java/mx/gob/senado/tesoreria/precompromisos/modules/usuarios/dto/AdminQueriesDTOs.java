@@ -13,8 +13,4 @@ public class AdminQueriesDTOs {
     public record UsuarioUnidadResponseDTO(
             Long idAsignacion, String unidadEjecutora, Integer activo, String fechaAsignacion
     ) {}
-
-    public record RolCatalogoDTO(
-            Long idRol, String clave, String descripcion
-    ) {}
 }
