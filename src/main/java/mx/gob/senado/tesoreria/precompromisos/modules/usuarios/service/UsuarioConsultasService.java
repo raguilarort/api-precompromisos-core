@@ -20,12 +20,10 @@ public class UsuarioConsultasService {
     }
 
     public List<UsuarioRolResponseDTO> listarRolesPorUsuario(Long idUsuario) {
-        return repository.getRolesUsuario(idUsuario);
+        return repository.getUsuarioRoles(idUsuario);
     }
 
     public List<UsuarioUnidadResponseDTO> listarUnidadesPorUsuario(Long idUsuario) {
-        return repository.getUnidadesUsuario(idUsuario);
+        return repository.getUsuarioUnidades(idUsuario);
     }
-
-
 }

@@ -2,6 +2,7 @@ package mx.gob.senado.tesoreria.precompromisos.modules.usuarios.repository;
 
 import mx.gob.senado.tesoreria.precompromisos.modules.usuarios.dto.AdminQueriesDTOs.*;
 import org.springframework.jdbc.core.SqlOutParameter;
+import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
@@ -15,8 +16,8 @@ import java.util.Map;
 public class UsuarioConsultasRepository {
 
     private final SimpleJdbcCall getUsuariosCall;
-    private final SimpleJdbcCall getRolesUsuarioCall;
-    private final SimpleJdbcCall getUnidadesUsuarioCall;
+    private final SimpleJdbcCall getUsuarioRolesCall;
+    private final SimpleJdbcCall getUsuarioUnidadesCall;
 
     public UsuarioConsultasRepository(DataSource dataSource) {
         String paquete = "PKG_PRECOMP_CONSULTAS_ADMIN";
@@ -36,11 +37,13 @@ public class UsuarioConsultasRepository {
                     ))
                 );
 
-        this.getRolesUsuarioCall = new SimpleJdbcCall(dataSource)
+        this.getUsuarioRolesCall = new SimpleJdbcCall(dataSource)
                 .withCatalogName(paquete)
-                .withProcedureName("SP_GET_ROLES_USUARIO")
+                .withProcedureName("SP_GET_USUARIO_ROLES")
                 .withoutProcedureColumnMetaDataAccess() // Apagamos la lectura de metadatos por compatibilidad con Oracle 11g
                 .declareParameters(
+                    // Declaramos el parámetro de entrada (IN)
+                    new SqlParameter("p_id_usuario", Types.NUMERIC),
                     new SqlOutParameter("p_cursor", Types.REF_CURSOR, (rs, rowNum) -> new UsuarioRolResponseDTO(
                             rs.getLong("ID_ASIGNACION"),
                             rs.getLong("ID_ROL"),
@@ -51,17 +54,19 @@ public class UsuarioConsultasRepository {
                     ))
                 );
 
-        this.getUnidadesUsuarioCall = new SimpleJdbcCall(dataSource)
+        this.getUsuarioUnidadesCall = new SimpleJdbcCall(dataSource)
                 .withCatalogName(paquete)
-                .withProcedureName("SP_GET_UNIDADES_USUARIO")
+                .withProcedureName("SP_GET_USUARIO_UNIDADES")
                 .withoutProcedureColumnMetaDataAccess()
                 .declareParameters(
-                        new SqlOutParameter("p_cursor", Types.REF_CURSOR, (rs, rowNum) -> new UsuarioUnidadResponseDTO(
-                                rs.getLong("ID_ASIGNACION"),
-                                rs.getString("UNIDAD_EJECUTORA"),
-                                rs.getInt("ACTIVO"),
-                                rs.getString("FECHA_ASIGNACION")
-                        ))
+                    // Declaramos el parámetro de entrada (IN)
+                    new SqlParameter("p_id_usuario", Types.NUMERIC),
+                    new SqlOutParameter("p_cursor", Types.REF_CURSOR, (rs, rowNum) -> new UsuarioUnidadResponseDTO(
+                            rs.getLong("ID_ASIGNACION"),
+                            rs.getString("UNIDAD_EJECUTORA"),
+                            rs.getInt("ACTIVO"),
+                            rs.getString("FECHA_ASIGNACION")
+                    ))
                 );
     }
 
@@ -70,13 +75,13 @@ public class UsuarioConsultasRepository {
         return (List<UsuarioResponseDTO>) out.get("p_cursor");
     }
 
-    public List<UsuarioRolResponseDTO> getRolesUsuario(Long idUsuario) {
-        Map<String, Object> out = getRolesUsuarioCall.execute(new MapSqlParameterSource("p_id_usuario", idUsuario));
+    public List<UsuarioRolResponseDTO> getUsuarioRoles(Long idUsuario) {
+        Map<String, Object> out = getUsuarioRolesCall.execute(new MapSqlParameterSource("p_id_usuario", idUsuario));
         return (List<UsuarioRolResponseDTO>) out.get("p_cursor");
     }
 
-    public List<UsuarioUnidadResponseDTO> getUnidadesUsuario(Long idUsuario) {
-        Map<String, Object> out = getUnidadesUsuarioCall.execute(new MapSqlParameterSource("p_id_usuario", idUsuario));
+    public List<UsuarioUnidadResponseDTO> getUsuarioUnidades(Long idUsuario) {
+        Map<String, Object> out = getUsuarioUnidadesCall.execute(new MapSqlParameterSource("p_id_usuario", idUsuario));
         return (List<UsuarioUnidadResponseDTO>) out.get("p_cursor");
     }
 }
