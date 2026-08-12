@@ -31,4 +31,11 @@ public class GlobalExceptionHandler {
                 "error", "Error interno de base de datos. Contacte al administrador."
         ));
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, String>> handleAllExceptions(Exception ex) {
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Error interno de base de datos. Contacte al administrador."));
+    }
 }
