@@ -18,7 +18,7 @@ public class PartidasController {
         this.partidasService = partidasService;
     }
 
-    @GetMapping("")
+    @GetMapping
     public ResponseEntity<List<PartidaDTO>> obtenerCatalogoPartidas() {
         return ResponseEntity.ok(partidasService.obtenerCatalogoPartidas());
     }
