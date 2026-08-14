@@ -2,10 +2,12 @@ package mx.gob.senado.tesoreria.precompromisos.modules.catalogos.tipos.requerimi
 
 import mx.gob.senado.tesoreria.precompromisos.modules.catalogos.tipos.requerimientos.dto.TipoRequerimientoDTO;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.util.List;
 
+@Repository
 public class TiposRequerimientoRepository {
     private final JdbcTemplate getCatalogoTiposRequerimientoCall;
 
