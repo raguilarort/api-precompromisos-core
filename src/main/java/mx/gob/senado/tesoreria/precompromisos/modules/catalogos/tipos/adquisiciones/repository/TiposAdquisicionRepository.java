@@ -16,10 +16,10 @@ public class TiposAdquisicionRepository {
     }
 
     public List<TipoAdquisicionDTO> getCatalogoTiposAdquisicion() {
-        String sql = "SELECT ID_TIPO_ADQUISION, NOMBRE, REQUIERE_CONTRATO FROM SAPFIN_PA.RF_TC_TIPO_ADQUISICION WHERE ID_TIPO_ADQUISICION IN (0, 1, 2, 3, 5)";
+        String sql = "SELECT ID_TIPO_ADQUISICION, NOMBRE, REQUIERE_CONTRATO FROM SAPFIN_PA.RF_TC_TIPO_ADQUISICION WHERE ID_TIPO_ADQUISICION IN (0, 1, 2, 3, 5)";
 
         return getCatalogoTiposAdquisicionCall.query(sql, (rs, rowNum) -> new TipoAdquisicionDTO(
-                rs.getInt("ID_TIPO_ADQUISION"),
+                rs.getInt("ID_TIPO_ADQUISICION"),
                 rs.getString("NOMBRE"),
                 rs.getBoolean("REQUIERE_CONTRATO")
         ));
