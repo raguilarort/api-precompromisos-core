@@ -78,26 +78,3 @@ public class ClavesProgramaticasRepository {
         return (List<ClaveProgramaticaDTO>) out.get("p_resultado");
     }
 }
-
-
-
-/*
-private final SimpleJdbcCall getCatalogoUnidadesEjecutorasCall;
-
-public UnidadesEjecutorasRepository(DataSource dataSource) {
-    String paquete = "PKG_PRECOMP_CATALOGOS";
-
-    this.getCatalogoUnidadesEjecutorasCall = new SimpleJdbcCall(dataSource)
-            .withCatalogName(paquete)
-            .withProcedureName("SP_GET_UNI_EJECUTORAS")
-            .withoutProcedureColumnMetaDataAccess()
-            .declareParameters(
-                    new SqlOutParameter("p_cursor", Types.REF_CURSOR, (rs, rowNum) -> new UnidadEjecutoraDTO(
-                            rs.getString("UNIDAD_EJECUTORA"),
-                            rs.getString("INICIALES"),
-                            rs.getString("NOMBRE_CORTO"),
-                            rs.getString("DESCRIPCION"),
-                            rs.getString("AMBITO")
-                    ))
-            );
- */
