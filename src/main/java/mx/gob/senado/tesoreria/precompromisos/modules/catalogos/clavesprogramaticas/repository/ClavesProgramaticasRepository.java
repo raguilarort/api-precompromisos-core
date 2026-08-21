@@ -24,7 +24,7 @@ public class ClavesProgramaticasRepository {
         // 1. Llamada para obtener TODAS las claves por ejercicio (Nivel 5)
         this.getClavesProgramaticasPorEjercicioCall = new SimpleJdbcCall(dataSource)
                 .withCatalogName(paquete)
-                .withProcedureName("SP_LISTAR_CLAVES_PROGRAMATICAS")
+                .withProcedureName("SP_LISTAR_CLAVES_PRGRAMATICAS")
                 .withoutProcedureColumnMetaDataAccess()
                 .declareParameters(
                         new SqlParameter("p_ejercicio", Types.NUMERIC),
@@ -40,7 +40,7 @@ public class ClavesProgramaticasRepository {
         // 2. Llamada para obtener las claves filtradas por Unidad y Ejercicio
         this.getClavesProgramaticasPorEjercicioYUnidadCall = new SimpleJdbcCall(dataSource)
                 .withCatalogName(paquete)
-                .withProcedureName("SP_LISTAR_CLAVES_POR_UNIDAD")
+                .withProcedureName("SP_LISTAR_CVES_PROG_POR_UNIDAD")
                 .withoutProcedureColumnMetaDataAccess()
                 .declareParameters(
                         new SqlParameter("p_ejercicio", Types.NUMERIC),
