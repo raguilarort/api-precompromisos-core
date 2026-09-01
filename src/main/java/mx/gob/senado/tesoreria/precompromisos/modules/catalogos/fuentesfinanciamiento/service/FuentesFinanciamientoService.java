@@ -15,6 +15,10 @@ public class FuentesFinanciamientoService {
     }
 
     public List<FuenteFinanciamientoDTO> obtenerCatalogoFuentesFinanciamiento() {
-        return repository.getCatalogoFuentesFinanciamiento();
+        return repository.listarFuentesFinanciamiento();
+    }
+
+    public List<FuenteFinanciamientoDTO> consultarFuentesFinanciamiento(Integer ejercicio, String unidad, Integer idCveProg, Integer idPartida) {
+        return repository.listarFuentesFinanciamiento(ejercicio, unidad, idCveProg, idPartida);
     }
 }
