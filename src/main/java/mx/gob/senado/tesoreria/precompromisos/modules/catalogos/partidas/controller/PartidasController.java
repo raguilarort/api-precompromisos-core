@@ -22,9 +22,16 @@ public class PartidasController {
     }
 
     @GetMapping
+    @Operation(summary = "Obtener todas las partidas", description = "Devuelve el catálogo completo.")
+    public ResponseEntity<List<PartidaDTO>> obtenerCatalogoCompleto() {
+        return ResponseEntity.ok(partidasService.obtenerCatalogoPartidas());
+        // ^ Asumiendo que agregas este método a tu service
+    }
+
+    @GetMapping(params = {"ejercicio", "unidad", "idCveProg"})
     @Operation(
             summary = "Obtener todas las partidas presupuestales vinculadas a una clave programática",
-            description = "Devuelve la lista de partidas específicadas del catálogo de clasificación por objeto del gasto. Soporta filtrado opcional por unidad ejecutora."
+            description = "Devuelve la lista de partidas específicadas del catálogo de clasificación por objeto del gasto que cumplan con el filtro por unidad ejecutora y programa presupuestal."
     )
     public ResponseEntity<List<PartidaDTO>> consultarPartidasEspecificas(
             @Parameter(description = "Año del ejercicio presupuestal", example = "2026")

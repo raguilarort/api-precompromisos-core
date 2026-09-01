@@ -30,7 +30,7 @@ public class FuentesFinanciamientoController {
         return ResponseEntity.ok(fuentesFinanciamientoService.obtenerCatalogoFuentesFinanciamiento());
     }
 
-    @GetMapping
+    @GetMapping(params = {"ejercicio", "unidad", "idCveProg", "idPartida"})
     @Operation(
             summary = "Obtener todas las fuentes de financiamiento vinculadas a una unidad, clave programática y partida",
             description = "Devuelve la lista de fuentes de financiamiento. Soporta filtrado opcional por ejercicio, unidad ejecutora, programa y partida."
