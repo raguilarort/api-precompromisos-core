@@ -1,5 +1,6 @@
 package mx.gob.senado.tesoreria.precompromisos.modules.catalogos.fuentesfinanciamiento.service;
 
+import mx.gob.senado.tesoreria.precompromisos.modules.catalogos.fuentesfinanciamiento.dto.FiltroFuenteFinanciamientoDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.catalogos.fuentesfinanciamiento.dto.FuenteFinanciamientoDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.catalogos.fuentesfinanciamiento.repository.FuentesFinanciamientoRepository;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,12 @@ public class FuentesFinanciamientoService {
         return repository.listarFuentesFinanciamiento();
     }
 
-    public List<FuenteFinanciamientoDTO> consultarFuentesFinanciamiento(Integer ejercicio, String unidad, Integer idCveProg, Integer idPartida) {
-        return repository.listarFuentesFinanciamiento(ejercicio, unidad, idCveProg, idPartida);
+    public List<FuenteFinanciamientoDTO> consultarFuentesFinanciamiento(FiltroFuenteFinanciamientoDTO filtro) {
+        return repository.listarFuentesFinanciamiento(
+                filtro.ejercicio(),
+                filtro.unidad(),
+                filtro.idCveProg(),
+                filtro.idPartida()
+        );
     }
 }
