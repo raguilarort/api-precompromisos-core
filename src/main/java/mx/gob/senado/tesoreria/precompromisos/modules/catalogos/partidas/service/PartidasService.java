@@ -2,8 +2,6 @@ package mx.gob.senado.tesoreria.precompromisos.modules.catalogos.partidas.servic
 
 import mx.gob.senado.tesoreria.precompromisos.modules.catalogos.partidas.dto.PartidaDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.catalogos.partidas.repository.PartidasRepository;
-import mx.gob.senado.tesoreria.precompromisos.modules.catalogos.unidadesejecutoras.dto.UnidadEjecutoraDTO;
-import mx.gob.senado.tesoreria.precompromisos.modules.catalogos.unidadesejecutoras.repository.UnidadesEjecutorasRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +15,10 @@ public class PartidasService {
     }
 
     public List<PartidaDTO> obtenerCatalogoPartidas() {
-        return repository.getCatalogoPartidas();
+        return repository.listarPartidasEspecificas();
+    }
+
+    public List<PartidaDTO> consultarCatalogoPartidas(Integer ejercicio, String unidad, Integer idCveProg) {
+        return repository.listarPartidasEspecificasPorEjercicioUnidadCveProg(ejercicio, unidad, idCveProg);
     }
 }

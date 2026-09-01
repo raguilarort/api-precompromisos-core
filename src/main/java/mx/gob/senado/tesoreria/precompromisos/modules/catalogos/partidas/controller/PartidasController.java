@@ -1,10 +1,13 @@
 package mx.gob.senado.tesoreria.precompromisos.modules.catalogos.partidas.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import mx.gob.senado.tesoreria.precompromisos.modules.catalogos.partidas.dto.PartidaDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.catalogos.partidas.service.PartidasService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -19,7 +22,26 @@ public class PartidasController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PartidaDTO>> obtenerCatalogoPartidas() {
-        return ResponseEntity.ok(partidasService.obtenerCatalogoPartidas());
+    @Operation(
+            summary = "Obtener todas las partidas presupuestales vinculadas a una clave programática",
+            description = "Devuelve la lista de partidas específicadas del catálogo de clasificación por objeto del gasto. Soporta filtrado opcional por unidad ejecutora."
+    )
+    public ResponseEntity<List<PartidaDTO>> consultarPartidasEspecificas(
+            @Parameter(description = "Año del ejercicio presupuestal", example = "2026")
+            @RequestParam(name = "ejercicio") Integer ejercicio,
+
+            @Parameter(description = "Clave de la unidad ejecutora (Ej. 101, 102).", example = "101")
+            @RequestParam(name = "unidad") String unidad,
+
+            @Parameter(description = "Identificador de la clave programática")
+            @RequestParam(name="idCveProg") Integer idCveProg) {
+
+        List<PartidaDTO> partidas = partidasService.consultarCatalogoPartidas(ejercicio, unidad, idCveProg);
+
+        if (partidas.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(partidas);
     }
 }
