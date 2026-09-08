@@ -13,5 +13,6 @@ public record DisponibilidadClavePresupuestariaDTO(
         Double disponibleSeptiembre,
         Double disponibleOctubre,
         Double disponibleNoviembre,
-        Double disponibleDiciembre
+        Double disponibleDiciembre,
+        Double disponibleTotal
 ) {}
