@@ -1,14 +1,14 @@
-package mx.gob.senado.tesoreria.precompromisos.exception;
+package mx.gob.senado.tesoreria.precompromisos.shared.exceptions.handler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.sql.SQLException;
 import java.util.Map;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(SQLException.class)
@@ -17,16 +17,14 @@ public class GlobalExceptionHandler {
 
         // Buscamos si es un error controlado por nuestros Stored Procedures (Códigos -20000)
         if (mensajeOracle != null && mensajeOracle.contains("ORA-200")) {
-            // Extraemos solo el mensaje limpio, quitando el código ORA y el salto de línea
             String mensajeLimpio = mensajeOracle.substring(mensajeOracle.indexOf(":") + 1).split("\n")[0].trim();
-
             return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
                     "error", "Regla de Negocio",
                     "mensaje", mensajeLimpio
             ));
         }
 
-        // Si es un error de base de datos no controlado (Ej. Se cayó la red)
+        // Error de base de datos no controlado
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
                 "error", "Error interno de base de datos. Contacte al administrador."
         ));
@@ -36,6 +34,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleAllExceptions(Exception ex) {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "Error interno de base de datos. Contacte al administrador."));
+                .body(Map.of("error", "Error interno del servidor. Contacte al administrador."));
     }
 }

@@ -2,7 +2,6 @@ package mx.gob.senado.tesoreria.precompromisos.modules.clavespresupuestarias.rep
 
 import mx.gob.senado.tesoreria.precompromisos.modules.clavespresupuestarias.dto.ClavePresupuestariaDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.clavespresupuestarias.dto.DisponibilidadClavePresupuestariaDTO;
-import mx.gob.senado.tesoreria.precompromisos.shared.exceptions.ClavePresupuestariaException;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.Types;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package mx.gob.senado.tesoreria.precompromisos.shared.exceptions;
+package mx.gob.senado.tesoreria.precompromisos.modules.clavespresupuestarias.exception;
 
 public class ClavePresupuestariaException extends RuntimeException {
 

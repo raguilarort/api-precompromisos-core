@@ -4,7 +4,7 @@ import mx.gob.senado.tesoreria.precompromisos.modules.clavespresupuestarias.dto.
 import mx.gob.senado.tesoreria.precompromisos.modules.clavespresupuestarias.dto.DisponibilidadClavePresupuestariaDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.clavespresupuestarias.dto.FiltroClavePresupuestariaDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.clavespresupuestarias.repository.ClavesPresupuestariasRepository;
-import mx.gob.senado.tesoreria.precompromisos.shared.exceptions.ClavePresupuestariaException;
+import mx.gob.senado.tesoreria.precompromisos.modules.clavespresupuestarias.exception.ClavePresupuestariaException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;

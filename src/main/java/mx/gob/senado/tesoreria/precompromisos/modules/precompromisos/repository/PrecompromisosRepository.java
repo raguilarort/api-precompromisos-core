@@ -1,0 +1,114 @@
+package mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.repository;
+
+import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.ConceptoRequestDTO;
+import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.ResultadoRegistroPrecompromiso;
+import org.springframework.jdbc.core.SqlOutParameter;
+import org.springframework.jdbc.core.SqlParameter;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
+import org.springframework.stereotype.Repository;
+
+import javax.sql.DataSource;
+import java.math.BigDecimal;
+import java.sql.Types;
+import java.util.Map;
+
+@Repository
+public class PrecompromisosRepository {
+
+    private static final String paqueteAdmin = "PKG_PRECOMPROMISO_ADMIN";
+    private static final String paqueteConsulta = "PKG_PRECOMPROMISO_QRY";
+
+    private final SimpleJdbcCall registrarPrecompromisoCall;
+    private final SimpleJdbcCall registrarPrecompromisoConceptoCall;
+
+    public PrecompromisosRepository(DataSource dataSource) {
+
+        this.registrarPrecompromisoCall = new SimpleJdbcCall(dataSource)
+                .withCatalogName(paqueteAdmin)
+                .withProcedureName("SP_REGISTRAR_PRECOMPROMISO")
+                .withoutProcedureColumnMetaDataAccess() // Optimización para Oracle
+                .declareParameters(
+                        new SqlParameter("p_ejercicio", Types.NUMERIC),
+                        new SqlParameter("p_unidad_ejecutora", Types.VARCHAR),
+                        new SqlParameter("p_no_orden_servicio", Types.VARCHAR),
+                        new SqlParameter("p_id_tipo_contratacion", Types.NUMERIC),
+                        new SqlParameter("p_id_tipo_requerimiento", Types.NUMERIC),
+
+                        new SqlOutParameter("p_id_precompromiso", Types.NUMERIC),
+                        new SqlOutParameter("p_folio", Types.VARCHAR)
+                );
+
+        this.registrarPrecompromisoConceptoCall = new SimpleJdbcCall(dataSource)
+                .withCatalogName(paqueteAdmin)
+                .withProcedureName("SP_REGISTRAR_CONCEPTO")
+                .withoutProcedureColumnMetaDataAccess() // Optimización para Oracle
+                .declareParameters(
+                        new SqlParameter("p_id_precompromiso", Types.NUMERIC),
+                        new SqlParameter("p_id_cve_presupuestaria", Types.NUMERIC),
+                        new SqlParameter("p_descripcion", Types.VARCHAR),
+                        new SqlParameter("p_importe_enero", Types.NUMERIC),
+                        new SqlParameter("p_importe_febrero", Types.NUMERIC),
+                        new SqlParameter("p_importe_marzo", Types.NUMERIC),
+                        new SqlParameter("p_importe_abril", Types.NUMERIC),
+                        new SqlParameter("p_importe_mayo", Types.NUMERIC),
+                        new SqlParameter("p_importe_junio", Types.NUMERIC),
+                        new SqlParameter("p_importe_julio", Types.NUMERIC),
+                        new SqlParameter("p_importe_agosto", Types.NUMERIC),
+                        new SqlParameter("p_importe_septiembre", Types.NUMERIC),
+                        new SqlParameter("p_importe_octubre", Types.NUMERIC),
+                        new SqlParameter("p_importe_noviembre", Types.NUMERIC),
+                        new SqlParameter("p_importe_diciembre", Types.NUMERIC),
+
+                        new SqlOutParameter("p_id_concepto", Types.NUMERIC)
+                );
+    }
+
+    /**
+     * Registra la cabecera del precompromiso
+     */
+    public ResultadoRegistroPrecompromiso registrarCabecera(Integer ejercicio, String unidadEjecutora, String noOrdenServicio, Integer idTipoContratacion, Integer idTipoRequerimiento) {
+
+        MapSqlParameterSource in = new MapSqlParameterSource()
+                .addValue("p_ejercicio", ejercicio)
+                .addValue("p_unidad_ejecutora", unidadEjecutora)
+                .addValue("p_no_orden_servicio", noOrdenServicio)
+                .addValue("p_id_tipo_contratacion", idTipoContratacion)
+                .addValue("p_id_tipo_requerimiento", idTipoRequerimiento);
+
+        Map<String, Object> out = registrarPrecompromisoCall.execute(in);
+
+        BigDecimal idPrecompromisoBd = (BigDecimal) out.get("p_id_precompromiso");
+        String folioGenerado = (String) out.get("p_folio");
+
+        return new ResultadoRegistroPrecompromiso(
+                idPrecompromisoBd != null ? idPrecompromisoBd.intValue() : null,
+                folioGenerado
+        );
+    }
+
+    public Integer registrarConcepto(Integer idPrecompromiso, ConceptoRequestDTO concepto) {
+        MapSqlParameterSource in = new MapSqlParameterSource()
+                .addValue("p_id_precompromiso", idPrecompromiso)
+                .addValue("p_id_cve_presupuestaria", concepto.idCvePresupuestaria())
+                .addValue("p_descripcion", concepto.descripcion())
+                .addValue("p_importe_enero", concepto.importeEnero())
+                .addValue("p_importe_febrero", concepto.importeFebrero())
+                .addValue("p_importe_marzo", concepto.importeMarzo())
+                .addValue("p_importe_abril", concepto.importeAbril())
+                .addValue("p_importe_mayo", concepto.importeMayo())
+                .addValue("p_importe_junio", concepto.importeJunio())
+                .addValue("p_importe_julio", concepto.importeJulio())
+                .addValue("p_importe_agosto", concepto.importeAgosto())
+                .addValue("p_importe_septiembre", concepto.importeSeptiembre())
+                .addValue("p_importe_octubre", concepto.importeOctubre())
+                .addValue("p_importe_noviembre", concepto.importeNoviembre())
+                .addValue("p_importe_diciembre", concepto.importeDiciembre());
+
+        Map<String, Object> out = registrarPrecompromisoConceptoCall.execute(in);
+
+        BigDecimal idConceptoBd = (BigDecimal) out.get("p_id_concepto");
+
+        return idConceptoBd != null ? idConceptoBd.intValue() : null;
+    }
+}

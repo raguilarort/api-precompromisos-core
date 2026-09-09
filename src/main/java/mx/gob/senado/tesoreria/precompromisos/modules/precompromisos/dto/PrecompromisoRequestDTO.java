@@ -1,20 +1,29 @@
 package mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+
 import java.util.List;
 
-public class PrecompromisoRequestDTO {
-    private Integer ejercicio;
-    private String unidadEjecutora;
-    private String noOrdenServicio;
-    private List<ClavePresupuestariaRequestDTO> partidas;
+public record PrecompromisoRequestDTO(
+        @NotNull(message = "El ejercicio fiscal es obligatorio")
+        Integer ejercicio,
 
-    // Genera Getters y Setters
-    public Integer getEjercicio() { return ejercicio; }
-    public void setEjercicio(Integer ejercicio) { this.ejercicio = ejercicio; }
-    public String getUnidadEjecutora() { return unidadEjecutora; }
-    public void setUnidadEjecutora(String unidadEjecutora) { this.unidadEjecutora = unidadEjecutora; }
-    public String getNoOrdenServicio() { return noOrdenServicio; }
-    public void setNoOrdenServicio(String noOrdenServicio) { this.noOrdenServicio = noOrdenServicio; }
-    public List<ClavePresupuestariaRequestDTO> getPartidas() { return partidas; }
-    public void setPartidas(List<ClavePresupuestariaRequestDTO> partidas) { this.partidas = partidas; }
-}
+        @NotNull(message = "La unidad ejecutora es obligatoria")
+        Integer unidad,
+
+        @NotBlank(message = "El número de requisición es obligatorio")
+        String numeroRequisicion,
+
+        @NotNull(message = "El tipo de contratación es obligatorio")
+        Integer tipoContratacion,
+
+        @NotNull(message = "El tipo de requerimiento es obligatorio")
+        Integer tipoRequerimiento,
+
+        @NotEmpty(message = "Debe incluir al menos un concepto en el precompromiso")
+        @Valid // Obliga a validar cada elemento dentro de la lista
+        List<ConceptoRequestDTO> conceptos
+) {}
