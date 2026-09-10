@@ -26,7 +26,7 @@ public class JwtTokenProvider {
     }
 
     // Genera el token inyectando el correo, rol principal y las unidades permitidas
-    public String generateToken(Integer idUsuario, String email, List<String> roles, List<String> unidades, Long numEmpleado) {
+    public String generateToken(Long idUsuario, String email, List<String> roles, List<String> unidades, Long numEmpleado) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 

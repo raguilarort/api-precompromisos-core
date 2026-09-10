@@ -42,7 +42,7 @@ public class AuthService {
         Long numEmpleado = (numEmpleadoNumber != null) ? numEmpleadoNumber.longValue() : null;
 
         // 4. Generamos el JWT de nuestro backend
-        String accessToken = tokenProvider.generateToken(correo, roles, unidades, numEmpleado);
+        String accessToken = tokenProvider.generateToken(idUsuario, correo, roles, unidades, numEmpleado);
 
         // 5. Retornamos el DTO ensamblado
         return new UserInfoDTO(
