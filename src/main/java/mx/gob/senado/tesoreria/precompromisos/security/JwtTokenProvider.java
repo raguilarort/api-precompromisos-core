@@ -26,12 +26,13 @@ public class JwtTokenProvider {
     }
 
     // Genera el token inyectando el correo, rol principal y las unidades permitidas
-    public String generateToken(String email, List<String> roles, List<String> unidades, Long numEmpleado) {
+    public String generateToken(Integer idUsuario, String email, List<String> roles, List<String> unidades, Long numEmpleado) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 
         return Jwts.builder()
                 .subject(email)
+                .claim("idUsuario", idUsuario)
                 .claim("roles", roles)
                 .claim("unidades", unidades)
                 .claim("numEmpleado", numEmpleado)
@@ -39,6 +40,24 @@ public class JwtTokenProvider {
                 .expiration(expiryDate)
                 .signWith(getSigningKey())
                 .compact();
+    }
+
+    public Integer getIdUsuarioFromJWT(String token) {
+        Claims claims = Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        return claims.get("idUsuario", Integer.class);
+    }
+
+    public Long getNumEmpleadoFromJWT(String token) {
+        Claims claims = Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        return claims.get("numEmpleado", Long.class); // Extrae como Long
     }
 
     public String getEmailFromJWT(String token) {
@@ -67,14 +86,5 @@ public class JwtTokenProvider {
             // Aquí puedes agregar un logger para registrar si el token expiró o fue alterado
             return false;
         }
-    }
-
-    public Long getNumEmpleadoFromJWT(String token) {
-        Claims claims = Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-        return claims.get("numEmpleado", Long.class); // Extrae como Long
     }
 }

@@ -30,11 +30,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String jwt = getJwtFromRequest(request);
 
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-                String email = tokenProvider.getEmailFromJWT(jwt);
-                // Obtenemos la LISTA de roles desde el JWT
-                List<String> roles = tokenProvider.getRolesFromJWT(jwt);
+                Integer idUsuario = tokenProvider.getIdUsuarioFromJWT(jwt);
                 Number numEmpleado = tokenProvider.getNumEmpleadoFromJWT(jwt);
-                request.setAttribute("numEmpleado", numEmpleado); // Se lo pasamos limpio al Controller
+                String email = tokenProvider.getEmailFromJWT(jwt);
+                List<String> roles = tokenProvider.getRolesFromJWT(jwt);
 
                 // Armamos la credencial para el contexto de Spring
                 // Mapeamos cada rol del catálogo (Ej. ROLE_REVISOR) a una autoridad de Spring Security
@@ -42,12 +41,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
+                UsuarioPrincipal principal = new UsuarioPrincipal(idUsuario, email, numEmpleado);
+
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        email, null, authorities);
+                        principal, null, authorities);
 
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                // Guardamos al usuario en la sesión actual del hilo
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception ex) {
