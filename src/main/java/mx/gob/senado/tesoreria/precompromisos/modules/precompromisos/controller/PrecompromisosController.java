@@ -3,8 +3,9 @@ package mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.controller
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.PrecompromisoDetailDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.PrecompromisoRequestDTO;
-import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.PrecompromisoResumenDTO;
+import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.PrecompromisoResumeDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.service.PrecompromisosService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,10 +27,16 @@ public class PrecompromisosController {
 
     @GetMapping
     @Operation(summary = "Listar precompromisos por ejercicio fiscal")
-    public ResponseEntity<List<PrecompromisoResumenDTO>> listarPorEjercicio(
+    public ResponseEntity<List<PrecompromisoResumeDTO>> listarPorEjercicio(
             @RequestParam Integer ejercicio) {
         // Asumiendo que inyectas la llamada del Controller -> Service -> Repository
         return ResponseEntity.ok(service.consultarPorEjercicio(ejercicio));
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Obtener el detalle completo de un precompromiso para edición")
+    public ResponseEntity<PrecompromisoDetailDTO> obtenerPorId(@PathVariable Integer id) {
+        return ResponseEntity.ok(service.consultarPorId(id));
     }
 
     @PostMapping
@@ -37,7 +44,6 @@ public class PrecompromisosController {
     public ResponseEntity<Map<String, Object>> registrarPrecompromiso(
             @Valid @RequestBody PrecompromisoRequestDTO payload) {
 
-        // El servicio devolverá el ID o Folio generado
         String folioGenerado = service.registrar(payload);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(

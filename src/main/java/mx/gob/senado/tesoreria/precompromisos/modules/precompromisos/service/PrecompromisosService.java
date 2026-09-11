@@ -1,9 +1,6 @@
 package mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.service;
 
-import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.ConceptoRequestDTO;
-import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.PrecompromisoRequestDTO;
-import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.PrecompromisoResumenDTO;
-import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.ResultadoRegistroPrecompromiso;
+import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.*;
 import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.repository.PrecompromisosRepository;
 import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.exception.PrecompromisoException;
 import mx.gob.senado.tesoreria.precompromisos.security.utils.SecurityUtils;
@@ -59,8 +56,19 @@ public class PrecompromisosService {
         // 3. Insertar los conceptos nuevos
     }
 
+    public PrecompromisoDetailDTO consultarPorId(Integer idPrecompromiso) {
+        Integer idUsuario = SecurityUtils.obtenerIdUsuarioLogueado();
 
-    public List<PrecompromisoResumenDTO> consultarPorEjercicio(Integer ejercicio) {
+        PrecompromisoDetailDTO detalle = repository.consultarPorId(idPrecompromiso, idUsuario);
+
+        if (detalle == null) {
+            throw PrecompromisoException.registroNoEncontrado(idPrecompromiso);
+        }
+
+        return detalle;
+    }
+
+    public List<PrecompromisoResumeDTO> consultarPorEjercicio(Integer ejercicio) {
         Integer idUsuario = SecurityUtils.obtenerIdUsuarioLogueado();
 
         return repository.consultarPorEjercicio(ejercicio, idUsuario);

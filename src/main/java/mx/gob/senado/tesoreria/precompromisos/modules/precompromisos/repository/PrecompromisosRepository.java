@@ -1,8 +1,6 @@
 package mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.repository;
 
-import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.ConceptoRequestDTO;
-import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.PrecompromisoResumenDTO;
-import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.ResultadoRegistroPrecompromiso;
+import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.*;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -23,6 +21,7 @@ public class PrecompromisosRepository {
 
     private final SimpleJdbcCall registrarPrecompromisoCall;
     private final SimpleJdbcCall registrarPrecompromisoConceptoCall;
+    private final SimpleJdbcCall consultarPrecompromsisoPorIdCall;
     private final SimpleJdbcCall consultarPrecompromisosPorEjercicioCall;
 
     public PrecompromisosRepository(DataSource dataSource) {
@@ -66,6 +65,41 @@ public class PrecompromisosRepository {
                         new SqlOutParameter("p_id_concepto", Types.NUMERIC)
                 );
 
+        this.consultarPrecompromsisoPorIdCall = new SimpleJdbcCall(dataSource)
+                .withCatalogName(paqueteConsulta)
+                .withProcedureName("SP_CONSULTAR_POR_ID")
+                .withoutProcedureColumnMetaDataAccess()
+                .declareParameters(
+                    new SqlParameter("p_id_precompromiso", Types.NUMERIC),
+                    new SqlParameter("p_id_usuario", Types.NUMERIC),
+
+                    // Mapeo del Primer Cursor (Cabecera)
+                    new SqlOutParameter("p_cursor_cabecera", Types.REF_CURSOR, (rs, rowNum) -> new PrecompromisoDetailDTO(
+                            rs.getInt("id_precompromiso"),
+                            rs.getString("folio"),
+                            rs.getInt("ejercicio"),
+                            rs.getString("unidad_ejecutora"),
+                            rs.getInt("id_estatus"),
+                            rs.getString("estatus"),
+                            rs.getString("no_orden_servicio"),
+                            rs.getInt("id_tipo_contratacion"),
+                            rs.getInt("id_tipo_requerimiento"),
+                            null
+                    )),
+
+                    new SqlOutParameter("p_cursor_conceptos", Types.REF_CURSOR, (rs, rowNum) -> new ConceptoDetailDTO(
+                            rs.getInt("id_concepto"),
+                            rs.getString("descripcion"),
+                            rs.getInt("id_clave_presupuestaria"),
+                            rs.getInt("id_clave_programatica"),
+                            rs.getInt("id_partida_especifica"),
+                            rs.getInt("id_fuente_financiamiento"),
+                            rs.getDouble("importe_enero"), rs.getDouble("importe_febrero"), rs.getDouble("importe_marzo"), rs.getDouble("importe_abril"),
+                            rs.getDouble("importe_mayo"), rs.getDouble("importe_junio"), rs.getDouble("importe_julio"), rs.getDouble("importe_agosto"),
+                            rs.getDouble("importe_septiembre"), rs.getDouble("importe_octubre"), rs.getDouble("importe_noviembre"), rs.getDouble("importe_diciembre")
+                    ))
+                );
+
         this.consultarPrecompromisosPorEjercicioCall = new SimpleJdbcCall(dataSource)
                 .withCatalogName(paqueteConsulta)
                 .withProcedureName("SP_CONSULTAR_POR_EJERCICIO")
@@ -73,7 +107,7 @@ public class PrecompromisosRepository {
                 .declareParameters(
                         new SqlParameter("p_ejercicio", Types.NUMERIC),
                         new SqlParameter("p_id_usuario", Types.NUMERIC),
-                        new SqlOutParameter("p_cursor", Types.REF_CURSOR, (rs, rowNum) -> new PrecompromisoResumenDTO(
+                        new SqlOutParameter("p_cursor", Types.REF_CURSOR, (rs, rowNum) -> new PrecompromisoResumeDTO(
                                 rs.getInt("id_precompromiso"),
                                 rs.getString("folio"),
                                 rs.getInt("ejercicio"),
@@ -136,12 +170,42 @@ public class PrecompromisosRepository {
         return idConceptoBd != null ? idConceptoBd.intValue() : null;
     }
 
-    public List<PrecompromisoResumenDTO> consultarPorEjercicio(Integer ejercicio, Integer idUsuario) {
+    public PrecompromisoDetailDTO consultarPorId(Integer idPrecompromiso, Integer idUsuario) {
+        MapSqlParameterSource in = new MapSqlParameterSource()
+                .addValue("p_id_precompromiso", idPrecompromiso)
+                .addValue("p_id_usuario", idUsuario);
+
+        Map<String, Object> out = consultarPrecompromsisoPorIdCall.execute(in);
+
+        List<PrecompromisoDetailDTO> precompromisosCabecera = (List<PrecompromisoDetailDTO>) out.get("p_cursor_cabecera");
+        List<ConceptoDetailDTO> precompromisoConceptos = (List<ConceptoDetailDTO>) out.get("p_cursor_conceptos");
+
+        if (precompromisosCabecera == null || precompromisosCabecera.isEmpty()) {
+            return null;
+        }
+
+        PrecompromisoDetailDTO precompromisoCabecera = precompromisosCabecera.getFirst();
+
+        return new PrecompromisoDetailDTO(
+                precompromisoCabecera.idPrecompromiso(),
+                precompromisoCabecera.folio(),
+                precompromisoCabecera.ejercicio(),
+                precompromisoCabecera.unidad(),
+                precompromisoCabecera.idEstatus(),
+                precompromisoCabecera.estatus(),
+                precompromisoCabecera.numeroRequisicion(),
+                precompromisoCabecera.idTipoContratacion(),
+                precompromisoCabecera.idTipoRequerimiento(),
+                precompromisoConceptos
+            );
+    }
+
+    public List<PrecompromisoResumeDTO> consultarPorEjercicio(Integer ejercicio, Integer idUsuario) {
         MapSqlParameterSource in = new MapSqlParameterSource()
                 .addValue("p_ejercicio", ejercicio)
                 .addValue("p_id_usuario", idUsuario);
 
         Map<String, Object> out = consultarPrecompromisosPorEjercicioCall.execute(in);
-        return (List<PrecompromisoResumenDTO>) out.get("p_cursor");
+        return (List<PrecompromisoResumeDTO>) out.get("p_cursor");
     }
 }

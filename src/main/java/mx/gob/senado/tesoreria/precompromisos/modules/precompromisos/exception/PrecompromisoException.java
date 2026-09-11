@@ -14,6 +14,10 @@ public class PrecompromisoException extends RuntimeException {
         return new PrecompromisoException("Error crítico: No se pudo registrar uno de los conceptos. La transacción ha sido revertida por seguridad.");
     }
 
+    public static PrecompromisoException registroNoEncontrado(Integer id) {
+        return new PrecompromisoException("El precompromiso con ID " + id + " no existe o no tiene permisos para consultarlo.");
+    }
+
     public static PrecompromisoException edicionNoPermitida(String estatusActual) {
         return new PrecompromisoException("No es posible modificar el precompromiso porque se encuentra en estatus: " + estatusActual);
     }
