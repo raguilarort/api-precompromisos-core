@@ -2,11 +2,15 @@ package mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.service;
 
 import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.ConceptoRequestDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.PrecompromisoRequestDTO;
+import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.PrecompromisoResumenDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.ResultadoRegistroPrecompromiso;
 import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.repository.PrecompromisosRepository;
 import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.exception.PrecompromisoException;
+import mx.gob.senado.tesoreria.precompromisos.security.utils.SecurityUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class PrecompromisosService {
@@ -55,4 +59,10 @@ public class PrecompromisosService {
         // 3. Insertar los conceptos nuevos
     }
 
+
+    public List<PrecompromisoResumenDTO> consultarPorEjercicio(Integer ejercicio) {
+        Integer idUsuario = SecurityUtils.obtenerIdUsuarioLogueado();
+
+        return repository.consultarPorEjercicio(ejercicio, idUsuario);
+    }
 }

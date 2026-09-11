@@ -4,11 +4,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.PrecompromisoRequestDTO;
+import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.PrecompromisoResumenDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.service.PrecompromisosService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -20,6 +22,14 @@ public class PrecompromisosController {
 
     public PrecompromisosController(PrecompromisosService service) {
         this.service = service;
+    }
+
+    @GetMapping
+    @Operation(summary = "Listar precompromisos por ejercicio fiscal")
+    public ResponseEntity<List<PrecompromisoResumenDTO>> listarPorEjercicio(
+            @RequestParam Integer ejercicio) {
+        // Asumiendo que inyectas la llamada del Controller -> Service -> Repository
+        return ResponseEntity.ok(service.consultarPorEjercicio(ejercicio));
     }
 
     @PostMapping

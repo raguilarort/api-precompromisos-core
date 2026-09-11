@@ -1,6 +1,7 @@
 package mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.repository;
 
 import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.ConceptoRequestDTO;
+import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.PrecompromisoResumenDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.ResultadoRegistroPrecompromiso;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.sql.Types;
+import java.util.List;
 import java.util.Map;
 
 @Repository
@@ -21,6 +23,7 @@ public class PrecompromisosRepository {
 
     private final SimpleJdbcCall registrarPrecompromisoCall;
     private final SimpleJdbcCall registrarPrecompromisoConceptoCall;
+    private final SimpleJdbcCall consultarPrecompromisosPorEjercicioCall;
 
     public PrecompromisosRepository(DataSource dataSource) {
 
@@ -61,6 +64,27 @@ public class PrecompromisosRepository {
                         new SqlParameter("p_importe_diciembre", Types.NUMERIC),
 
                         new SqlOutParameter("p_id_concepto", Types.NUMERIC)
+                );
+
+        this.consultarPrecompromisosPorEjercicioCall = new SimpleJdbcCall(dataSource)
+                .withCatalogName(paqueteConsulta)
+                .withProcedureName("SP_CONSULTAR_POR_EJERCICIO")
+                .withoutProcedureColumnMetaDataAccess()
+                .declareParameters(
+                        new SqlParameter("p_ejercicio", Types.NUMERIC),
+                        new SqlParameter("p_id_usuario", Types.NUMERIC),
+                        new SqlOutParameter("p_cursor", Types.REF_CURSOR, (rs, rowNum) -> new PrecompromisoResumenDTO(
+                                rs.getInt("id_precompromiso"),
+                                rs.getString("folio"),
+                                rs.getInt("ejercicio"),
+                                rs.getString("unidad_ejecutora"),
+                                rs.getString("estatus"),
+                                rs.getString("numero_requisicion"),
+                                rs.getString("tipo_contratacion"),
+                                rs.getString("tipo_requerimiento"),
+                                rs.getInt("cantidad_conceptos"),
+                                rs.getDouble("importe_total")
+                        ))
                 );
     }
 
@@ -110,5 +134,14 @@ public class PrecompromisosRepository {
         BigDecimal idConceptoBd = (BigDecimal) out.get("p_id_concepto");
 
         return idConceptoBd != null ? idConceptoBd.intValue() : null;
+    }
+
+    public List<PrecompromisoResumenDTO> consultarPorEjercicio(Integer ejercicio, Integer idUsuario) {
+        MapSqlParameterSource in = new MapSqlParameterSource()
+                .addValue("p_ejercicio", ejercicio)
+                .addValue("p_id_usuario", idUsuario);
+
+        Map<String, Object> out = consultarPrecompromisosPorEjercicioCall.execute(in);
+        return (List<PrecompromisoResumenDTO>) out.get("p_cursor");
     }
 }
