@@ -81,7 +81,7 @@ public class PrecompromisosRepository {
                             rs.getString("unidad_ejecutora"),
                             rs.getInt("id_estatus"),
                             rs.getString("estatus"),
-                            rs.getString("no_orden_servicio"),
+                            rs.getString("numero_requisicion"),
                             rs.getInt("id_tipo_contratacion"),
                             rs.getInt("id_tipo_requerimiento"),
                             null
@@ -92,8 +92,13 @@ public class PrecompromisosRepository {
                             rs.getString("descripcion"),
                             rs.getInt("id_clave_presupuestaria"),
                             rs.getInt("id_clave_programatica"),
+                            rs.getString("clave_programatica"),
+                            rs.getString("desc_clave_programatica"),
                             rs.getInt("id_partida_especifica"),
+                            rs.getString("partida_especifica"),
+                            rs.getString("desc_partida_especifica"),
                             rs.getInt("id_fuente_financiamiento"),
+                            rs.getString("desc_fuente_financiamiento"),
                             rs.getDouble("importe_enero"), rs.getDouble("importe_febrero"), rs.getDouble("importe_marzo"), rs.getDouble("importe_abril"),
                             rs.getDouble("importe_mayo"), rs.getDouble("importe_junio"), rs.getDouble("importe_julio"), rs.getDouble("importe_agosto"),
                             rs.getDouble("importe_septiembre"), rs.getDouble("importe_octubre"), rs.getDouble("importe_noviembre"), rs.getDouble("importe_diciembre")
