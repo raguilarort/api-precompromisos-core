@@ -7,8 +7,10 @@ import mx.gob.senado.tesoreria.precompromisos.security.utils.SecurityUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,6 +24,8 @@ public class PrecompromisosService {
 
     @Transactional
     public String registrar(PrecompromisoRequestDTO payload) {
+
+        validarCombinacionesDuplicadas(payload.conceptos());
 
         // 1. Guardar cabecera y atrapar el resultado de Oracle
         ResultadoRegistroPrecompromiso resultado = repository.registrarCabecera(
@@ -64,6 +68,8 @@ public class PrecompromisosService {
 
     @Transactional
     public void actualizar(Integer idPrecompromiso, PrecompromisoRequestDTO payload) {
+        validarCombinacionesDuplicadas(payload.conceptos());
+
         Integer idUsuario = SecurityUtils.obtenerIdUsuarioLogueado();
 
         PrecompromisoDetailDTO actual = repository.consultarPorId(idPrecompromiso, idUsuario);
@@ -172,5 +178,14 @@ public class PrecompromisosService {
                 conceptoPrevio.importeNoviembre() + conceptoPrevio.importeDiciembre();
 
         return Math.abs(totalPrevio - conceptoEntrante.obtenerTotal()) > 0.01;
+    }
+
+    private void validarCombinacionesDuplicadas(List<ConceptoRequestDTO> conceptos) {
+        Set<Integer> clavesVistas = new HashSet<>();
+        for (ConceptoRequestDTO concepto : conceptos) {
+            if (!clavesVistas.add(concepto.idCvePresupuestaria())) {
+                throw new IllegalArgumentException("El precompromiso contiene combinaciones presupuestales duplicadas. Consolide los importes en un solo concepto.");
+            }
+        }
     }
 }
