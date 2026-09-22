@@ -53,10 +53,10 @@ public class PrecompromisosController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Actualizar un precompromiso existente")
+    @Operation(summary = "Actualizar un precompromiso y sincronizar conceptos")
     public ResponseEntity<Map<String, String>> actualizarPrecompromiso(
             @PathVariable Integer id,
-            @Valid @RequestBody PrecompromisoRequestDTO payload) {
+            @RequestBody @Valid PrecompromisoRequestDTO payload) {
 
         service.actualizar(id, payload);
 

@@ -21,8 +21,12 @@ public class PrecompromisosRepository {
 
     private final SimpleJdbcCall registrarPrecompromisoCall;
     private final SimpleJdbcCall registrarPrecompromisoConceptoCall;
+    private final SimpleJdbcCall actualizarPrecompromisoCabeceraCall;
+    private final SimpleJdbcCall actualizarPrecompromisoConceptoCall;
+    private final SimpleJdbcCall eliminarPrecompromisoConceptoCall;
     private final SimpleJdbcCall consultarPrecompromsisoPorIdCall;
     private final SimpleJdbcCall consultarPrecompromisosPorEjercicioCall;
+    private final SimpleJdbcCall registrarPrecompromisoSeguimientoCall;
 
     public PrecompromisosRepository(DataSource dataSource) {
 
@@ -63,6 +67,56 @@ public class PrecompromisosRepository {
                         new SqlParameter("p_importe_diciembre", Types.NUMERIC),
 
                         new SqlOutParameter("p_id_concepto", Types.NUMERIC)
+                );
+
+        this.actualizarPrecompromisoCabeceraCall = new SimpleJdbcCall(dataSource)
+                .withCatalogName(paqueteAdmin)
+                .withProcedureName("SP_ACTUALIZAR_PRECOMPROMISO")
+                .withoutProcedureColumnMetaDataAccess() // Optimización para Oracle
+                .declareParameters(
+                        new SqlParameter("p_id_precompromiso", Types.NUMERIC),
+                        new SqlParameter("p_no_orden_servicio", Types.VARCHAR),
+                        new SqlParameter("p_id_tipo_contratacion", Types.NUMERIC),
+                        new SqlParameter("p_id_tipo_requerimiento", Types.NUMERIC),
+
+                        new SqlOutParameter("p_codigo_error", Types.NUMERIC),
+                        new SqlOutParameter("p_mensaje_error", Types.VARCHAR)
+                );
+
+        this.actualizarPrecompromisoConceptoCall = new SimpleJdbcCall(dataSource)
+                .withCatalogName(paqueteAdmin)
+                .withProcedureName("SP_ACTUALIZAR_CONCEPTO")
+                .withoutProcedureColumnMetaDataAccess() // Optimización para Oracle
+                .declareParameters(
+                        new SqlParameter("p_id_concepto", Types.NUMERIC),
+                        new SqlParameter("p_descripcion", Types.VARCHAR),
+                        new SqlParameter("p_id_cve_presupuestaria", Types.NUMERIC),
+                        new SqlParameter("p_importe_enero", Types.NUMERIC),
+                        new SqlParameter("p_importe_febrero", Types.NUMERIC),
+                        new SqlParameter("p_importe_marzo", Types.NUMERIC),
+                        new SqlParameter("p_importe_abril", Types.NUMERIC),
+                        new SqlParameter("p_importe_mayo", Types.NUMERIC),
+                        new SqlParameter("p_importe_junio", Types.NUMERIC),
+                        new SqlParameter("p_importe_julio", Types.NUMERIC),
+                        new SqlParameter("p_importe_agosto", Types.NUMERIC),
+                        new SqlParameter("p_importe_septiembre", Types.NUMERIC),
+                        new SqlParameter("p_importe_octubre", Types.NUMERIC),
+                        new SqlParameter("p_importe_noviembre", Types.NUMERIC),
+                        new SqlParameter("p_importe_diciembre", Types.NUMERIC),
+
+                        new SqlOutParameter("p_codigo_error", Types.NUMERIC),
+                        new SqlOutParameter("p_mensaje_error", Types.VARCHAR)
+                );
+
+        this.eliminarPrecompromisoConceptoCall = new SimpleJdbcCall(dataSource)
+                .withCatalogName(paqueteAdmin)
+                .withProcedureName("SP_ELIMINAR_CONCEPTO")
+                .withoutProcedureColumnMetaDataAccess()
+                .declareParameters(
+                        new SqlParameter("p_id_concepto", Types.NUMERIC),
+
+                        new SqlOutParameter("p_codigo_error", Types.NUMERIC),
+                        new SqlOutParameter("p_mensaje_error", Types.VARCHAR)
                 );
 
         this.consultarPrecompromsisoPorIdCall = new SimpleJdbcCall(dataSource)
@@ -125,6 +179,18 @@ public class PrecompromisosRepository {
                                 rs.getDouble("importe_total")
                         ))
                 );
+
+        this.registrarPrecompromisoSeguimientoCall = new SimpleJdbcCall(dataSource)
+                .withCatalogName(paqueteAdmin)
+                .withProcedureName("SP_REGISTRAR_SEGUIMIENTO")
+                .withoutProcedureColumnMetaDataAccess()
+                .declareParameters(
+                        new SqlParameter("p_id_precompromiso", Types.NUMERIC),
+                        new SqlParameter("p_id_estatus", Types.NUMERIC),
+                        new SqlParameter("p_tipo_movimiento", Types.VARCHAR),
+                        new SqlParameter("p_id_usuario", Types.NUMERIC),
+                        new SqlParameter("p_observaciones", Types.VARCHAR)
+                );
     }
 
     /**
@@ -175,6 +241,68 @@ public class PrecompromisosRepository {
         return idConceptoBd != null ? idConceptoBd.intValue() : null;
     }
 
+    public void actualizarCabecera(Integer idPrecompromiso, PrecompromisoRequestDTO payload) {
+        MapSqlParameterSource in = new MapSqlParameterSource()
+                .addValue("p_id_precompromiso", idPrecompromiso)
+                .addValue("p_no_orden_servicio", payload.numeroRequisicion())
+                .addValue("p_id_tipo_contratacion", payload.tipoContratacion())
+                .addValue("p_id_tipo_requerimiento", payload.tipoRequerimiento());
+
+        Map<String, Object> out = actualizarPrecompromisoCabeceraCall.execute(in);
+
+        BigDecimal codigoError = (BigDecimal) out.get("p_codigo_error");
+
+        if (codigoError != null && codigoError.intValue() != 0) {
+            String mensajeOracle = (String) out.get("p_mensaje_error");
+
+            throw new RuntimeException(mensajeOracle);
+        }
+    }
+
+    public void actualizarConcepto(ConceptoRequestDTO concepto) {
+        MapSqlParameterSource in = new MapSqlParameterSource()
+                .addValue("p_id_concepto", concepto.idConcepto())
+                .addValue("p_descripcion", concepto.descripcion())
+                .addValue("p_id_cve_presupuestaria", concepto.idCvePresupuestaria())
+                .addValue("p_importe_enero", concepto.importeEnero())
+                .addValue("p_importe_febrero", concepto.importeFebrero())
+                .addValue("p_importe_marzo", concepto.importeMarzo())
+                .addValue("p_importe_abril", concepto.importeAbril())
+                .addValue("p_importe_mayo", concepto.importeMayo())
+                .addValue("p_importe_junio", concepto.importeJunio())
+                .addValue("p_importe_julio", concepto.importeJulio())
+                .addValue("p_importe_agosto", concepto.importeAgosto())
+                .addValue("p_importe_septiembre", concepto.importeSeptiembre())
+                .addValue("p_importe_octubre", concepto.importeOctubre())
+                .addValue("p_importe_noviembre", concepto.importeNoviembre())
+                .addValue("p_importe_diciembre", concepto.importeDiciembre());
+
+        Map<String, Object> out = actualizarPrecompromisoConceptoCall.execute(in);
+
+        BigDecimal codigoError = (BigDecimal) out.get("p_codigo_error");
+
+        if (codigoError != null && codigoError.intValue() != 0) {
+            String mensajeOracle = (String) out.get("p_mensaje_error");
+
+            throw new RuntimeException(mensajeOracle);
+        }
+    }
+
+    public void eliminarConcepto(Integer idConcepto) {
+        MapSqlParameterSource in = new MapSqlParameterSource()
+                .addValue("p_id_concepto", idConcepto);
+
+        Map<String, Object> out = eliminarPrecompromisoConceptoCall.execute(in);
+
+        BigDecimal codigoError = (BigDecimal) out.get("p_codigo_error");
+
+        if (codigoError != null && codigoError.intValue() != 0) {
+            String mensajeOracle = (String) out.get("p_mensaje_error");
+
+            throw new RuntimeException(mensajeOracle);
+        }
+    }
+
     public PrecompromisoDetailDTO consultarPorId(Integer idPrecompromiso, Integer idUsuario) {
         MapSqlParameterSource in = new MapSqlParameterSource()
                 .addValue("p_id_precompromiso", idPrecompromiso)
@@ -212,5 +340,16 @@ public class PrecompromisosRepository {
 
         Map<String, Object> out = consultarPrecompromisosPorEjercicioCall.execute(in);
         return (List<PrecompromisoResumeDTO>) out.get("p_cursor");
+    }
+
+    public void registrarSeguimiento(Integer idPrecompromiso, Integer idEstatus, String tipoModificacion, Integer idUsuario, String observacion) {
+        MapSqlParameterSource in = new MapSqlParameterSource()
+                .addValue("p_id_precompromiso", idPrecompromiso)
+                .addValue("p_id_estatus", idEstatus)
+                .addValue("p_tipo_movimiento", tipoModificacion)
+                .addValue("p_id_usuario", idUsuario)
+                .addValue("p_observaciones", observacion);
+
+        registrarPrecompromisoSeguimientoCall.execute(in);
     }
 }
