@@ -23,6 +23,7 @@ public class PrecompromisosRepository {
     private final SimpleJdbcCall registrarPrecompromisoConceptoCall;
     private final SimpleJdbcCall actualizarPrecompromisoCabeceraCall;
     private final SimpleJdbcCall actualizarPrecompromisoConceptoCall;
+    private final SimpleJdbcCall eliminarPrecompromisoCall;
     private final SimpleJdbcCall eliminarPrecompromisoConceptoCall;
     private final SimpleJdbcCall consultarPrecompromsisoPorIdCall;
     private final SimpleJdbcCall consultarPrecompromisosPorEjercicioCall;
@@ -104,6 +105,17 @@ public class PrecompromisosRepository {
                         new SqlParameter("p_importe_noviembre", Types.NUMERIC),
                         new SqlParameter("p_importe_diciembre", Types.NUMERIC),
 
+                        new SqlOutParameter("p_codigo_error", Types.NUMERIC),
+                        new SqlOutParameter("p_mensaje_error", Types.VARCHAR)
+                );
+
+        this.eliminarPrecompromisoCall = new SimpleJdbcCall(dataSource)
+                .withCatalogName(paqueteAdmin)
+                .withProcedureName("SP_ELIMINAR_PRECOMPROMISO")
+                .withoutProcedureColumnMetaDataAccess()
+                .declareParameters(
+                        new SqlParameter("p_id_precompromiso", Types.NUMERIC),
+                        new SqlParameter("p_id_usuario", Types.NUMERIC),
                         new SqlOutParameter("p_codigo_error", Types.NUMERIC),
                         new SqlOutParameter("p_mensaje_error", Types.VARCHAR)
                 );
@@ -284,6 +296,20 @@ public class PrecompromisosRepository {
         if (codigoError != null && codigoError.intValue() != 0) {
             String mensajeOracle = (String) out.get("p_mensaje_error");
 
+            throw new RuntimeException(mensajeOracle);
+        }
+    }
+
+    public void eliminarPrecompromiso(Integer idPrecompromiso, Integer idUsuario) {
+        MapSqlParameterSource in = new MapSqlParameterSource()
+                .addValue("p_id_precompromiso", idPrecompromiso)
+                .addValue("p_id_usuario", idUsuario);
+
+        Map<String, Object> out = eliminarPrecompromisoCall.execute(in);
+
+        BigDecimal codigoError = (BigDecimal) out.get("p_codigo_error");
+        if (codigoError != null && codigoError.intValue() != 0) {
+            String mensajeOracle = (String) out.get("p_mensaje_error");
             throw new RuntimeException(mensajeOracle);
         }
     }

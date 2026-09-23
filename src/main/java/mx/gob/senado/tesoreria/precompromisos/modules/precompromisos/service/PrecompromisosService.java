@@ -151,6 +151,31 @@ public class PrecompromisosService {
         repository.registrarSeguimiento(idPrecompromiso, actual.idEstatus(), "MODIFICACION", idUsuario, observacion);
     }
 
+    @Transactional
+    public void eliminar(Integer idPrecompromiso) {
+        Integer idUsuario = SecurityUtils.obtenerIdUsuarioLogueado();
+
+        PrecompromisoDetailDTO actual = repository.consultarPorId(idPrecompromiso, idUsuario);
+
+        if (actual == null) {
+            throw PrecompromisoException.registroNoEncontrado(idPrecompromiso);
+        }
+
+        if (actual.idEstatus() != 1) {
+            throw new IllegalStateException("El precompromiso no puede eliminarse porque no se encuentra en estatus Capturado.");
+        }
+
+        repository.eliminarPrecompromiso(idPrecompromiso, idUsuario);
+
+        repository.registrarSeguimiento(
+                idPrecompromiso,
+                6,
+                "CAMBIO_ESTATUS",
+                idUsuario,
+                "El precompromiso y sus conceptos fueeron eliminado del sistema"
+        );
+    }
+
     public PrecompromisoDetailDTO consultarPorId(Integer idPrecompromiso) {
         Integer idUsuario = SecurityUtils.obtenerIdUsuarioLogueado();
 

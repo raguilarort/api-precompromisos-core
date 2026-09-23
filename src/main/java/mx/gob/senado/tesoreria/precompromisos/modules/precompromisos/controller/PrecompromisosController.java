@@ -64,4 +64,15 @@ public class PrecompromisosController {
                 "mensaje", "Precompromiso actualizado exitosamente"
         ));
     }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Eliminación lógica de un precompromiso")
+    public ResponseEntity<Map<String, String>> eliminarPrecompromiso(@PathVariable Integer id) {
+
+        service.eliminar(id);
+
+        return ResponseEntity.ok(Map.of(
+                "mensaje", "Precompromiso eliminado exitosamente"
+        ));
+    }
 }
