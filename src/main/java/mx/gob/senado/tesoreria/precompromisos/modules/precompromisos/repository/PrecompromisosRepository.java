@@ -149,7 +149,9 @@ public class PrecompromisosRepository {
                             rs.getString("estatus"),
                             rs.getString("numero_requisicion"),
                             rs.getInt("id_tipo_contratacion"),
+                            rs.getString("nombre_tipo_contratacion"),
                             rs.getInt("id_tipo_requerimiento"),
+                            rs.getString("nombre_tipo_requerimiento"),
                             null
                     )),
 
@@ -354,7 +356,9 @@ public class PrecompromisosRepository {
                 precompromisoCabecera.estatus(),
                 precompromisoCabecera.numeroRequisicion(),
                 precompromisoCabecera.idTipoContratacion(),
+                precompromisoCabecera.nombreTipoContratacion(),
                 precompromisoCabecera.idTipoRequerimiento(),
+                precompromisoCabecera.nombreTipoRequerimiento(),
                 precompromisoConceptos
             );
     }
