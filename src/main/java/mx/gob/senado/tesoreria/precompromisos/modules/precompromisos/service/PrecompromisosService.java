@@ -1,6 +1,7 @@
 package mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.service;
 
 import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.*;
+import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.enums.EstatusPrecompromisoEnum;
 import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.repository.PrecompromisosRepository;
 import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.exception.PrecompromisoException;
 import mx.gob.senado.tesoreria.precompromisos.security.utils.SecurityUtils;
@@ -57,7 +58,7 @@ public class PrecompromisosService {
         Integer idUsuario = SecurityUtils.obtenerIdUsuarioLogueado();
         repository.registrarSeguimiento(
                 resultado.idPrecompromiso(),
-                1, // ID Estatus Capturado
+                EstatusPrecompromisoEnum.CAPTURADO.getId(), // ID Estatus Capturado
                 "REGISTRO_INICIAL",
                 idUsuario,
                 "Captura inicial del precompromiso con " + payload.conceptos().size() + " concepto(s)."
@@ -169,7 +170,7 @@ public class PrecompromisosService {
 
         repository.registrarSeguimiento(
                 idPrecompromiso,
-                6,
+                EstatusPrecompromisoEnum.ELIMINADO.getId(),
                 "CAMBIO_ESTATUS",
                 idUsuario,
                 "El precompromiso y sus conceptos fueeron eliminado del sistema"
