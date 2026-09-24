@@ -185,6 +185,7 @@ public class PrecompromisosRepository {
                                 rs.getString("folio"),
                                 rs.getInt("ejercicio"),
                                 rs.getString("unidad_ejecutora"),
+                                rs.getInt("id_estatus"),
                                 rs.getString("estatus"),
                                 rs.getString("numero_requisicion"),
                                 rs.getString("tipo_contratacion"),
