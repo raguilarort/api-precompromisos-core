@@ -25,6 +25,7 @@ public class PrecompromisosRepository {
     private final SimpleJdbcCall actualizarPrecompromisoConceptoCall;
     private final SimpleJdbcCall eliminarPrecompromisoCall;
     private final SimpleJdbcCall eliminarPrecompromisoConceptoCall;
+    private final SimpleJdbcCall cambiarEstatusCall;
     private final SimpleJdbcCall consultarPrecompromsisoPorIdCall;
     private final SimpleJdbcCall consultarPrecompromisosPorEjercicioCall;
     private final SimpleJdbcCall registrarPrecompromisoSeguimientoCall;
@@ -127,6 +128,19 @@ public class PrecompromisosRepository {
                 .declareParameters(
                         new SqlParameter("p_id_concepto", Types.NUMERIC),
 
+                        new SqlOutParameter("p_codigo_error", Types.NUMERIC),
+                        new SqlOutParameter("p_mensaje_error", Types.VARCHAR)
+                );
+
+        this.cambiarEstatusCall = new SimpleJdbcCall(dataSource)
+                .withCatalogName(paqueteAdmin)
+                .withProcedureName("SP_CAMBIAR_ESTATUS")
+                .withoutProcedureColumnMetaDataAccess()
+                .declareParameters(
+                        new SqlParameter("p_id_precompromiso", Types.NUMERIC),
+                        new SqlParameter("p_id_estatus_nuevo", Types.NUMERIC),
+                        new SqlParameter("p_id_usuario", Types.NUMERIC),
+                        new SqlParameter("p_observaciones", Types.VARCHAR),
                         new SqlOutParameter("p_codigo_error", Types.NUMERIC),
                         new SqlOutParameter("p_mensaje_error", Types.VARCHAR)
                 );
@@ -329,6 +343,21 @@ public class PrecompromisosRepository {
             String mensajeOracle = (String) out.get("p_mensaje_error");
 
             throw new RuntimeException(mensajeOracle);
+        }
+    }
+
+    public void cambiarEstatus(Integer idPrecompromiso, Integer idEstatusNuevo, Integer idUsuario, String observaciones) {
+        MapSqlParameterSource in = new MapSqlParameterSource()
+                .addValue("p_id_precompromiso", idPrecompromiso)
+                .addValue("p_id_estatus_nuevo", idEstatusNuevo)
+                .addValue("p_id_usuario", idUsuario)
+                .addValue("p_observaciones", observaciones);
+
+        Map<String, Object> out = cambiarEstatusCall.execute(in);
+
+        BigDecimal codigoError = (BigDecimal) out.get("p_codigo_error");
+        if (codigoError != null && codigoError.intValue() != 0) {
+            throw new RuntimeException((String) out.get("p_mensaje_error"));
         }
     }
 

@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.PrecompromisoDetailDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.PrecompromisoRequestDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.PrecompromisoResumeDTO;
+import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.RechazoRequestDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.service.PrecompromisosService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -74,5 +75,29 @@ public class PrecompromisosController {
         return ResponseEntity.ok(Map.of(
                 "mensaje", "Precompromiso eliminado exitosamente"
         ));
+    }
+
+    @PatchMapping("/{id}/visto-bueno")
+    public ResponseEntity<Map<String, String>> darVistoBueno(@PathVariable Integer id) {
+        service.darVistoBueno(id);
+        return ResponseEntity.ok(Map.of("mensaje", "Visto bueno aplicado exitosamente."));
+    }
+
+    @PatchMapping("/{id}/autorizar")
+    public ResponseEntity<Map<String, String>> autorizar(@PathVariable Integer id) {
+        service.autorizar(id);
+        return ResponseEntity.ok(Map.of("mensaje", "Precompromiso autorizado con éxito."));
+    }
+
+    @PatchMapping("/{id}/rechazar")
+    public ResponseEntity<Map<String, String>> rechazar(@PathVariable Integer id, @RequestBody RechazoRequestDTO payload) {
+        service.rechazar(id, payload.motivo());
+        return ResponseEntity.ok(Map.of("mensaje", "Precompromiso rechazado."));
+    }
+
+    @PatchMapping("/{id}/cancelar")
+    public ResponseEntity<Map<String, String>> cancelar(@PathVariable Integer id) {
+        service.cancelar(id);
+        return ResponseEntity.ok(Map.of("mensaje", "Precompromiso cancelado."));
     }
 }

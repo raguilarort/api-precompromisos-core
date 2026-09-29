@@ -177,6 +177,30 @@ public class PrecompromisosService {
         );
     }
 
+    @Transactional
+    public void darVistoBueno(Integer idPrecompromiso) {
+        Integer idUsuario = SecurityUtils.obtenerIdUsuarioLogueado();
+        repository.cambiarEstatus(idPrecompromiso, EstatusPrecompromisoEnum.REVISADO.getId(), idUsuario, "Se otorgó el Visto Bueno (Revisado).");
+    }
+
+    @Transactional
+    public void autorizar(Integer idPrecompromiso) {
+        Integer idUsuario = SecurityUtils.obtenerIdUsuarioLogueado();
+        repository.cambiarEstatus(idPrecompromiso, EstatusPrecompromisoEnum.AUTORIZADO.getId(), idUsuario, "Precompromiso Autorizado. Presupuesto precomprometido.");
+    }
+
+    @Transactional
+    public void rechazar(Integer idPrecompromiso, String motivo) {
+        Integer idUsuario = SecurityUtils.obtenerIdUsuarioLogueado();
+        repository.cambiarEstatus(idPrecompromiso, EstatusPrecompromisoEnum.RECHAZADO.getId(), idUsuario, "Rechazado: " + motivo);
+    }
+
+    @Transactional
+    public void cancelar(Integer idPrecompromiso) {
+        Integer idUsuario = SecurityUtils.obtenerIdUsuarioLogueado();
+        repository.cambiarEstatus(idPrecompromiso, EstatusPrecompromisoEnum.CANCELADO.getId(), idUsuario, "Folio Cancelado.");
+    }
+
     public PrecompromisoDetailDTO consultarPorId(Integer idPrecompromiso) {
         Integer idUsuario = SecurityUtils.obtenerIdUsuarioLogueado();
 
