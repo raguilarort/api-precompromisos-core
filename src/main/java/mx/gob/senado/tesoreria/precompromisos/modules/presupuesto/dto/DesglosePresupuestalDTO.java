@@ -28,4 +28,20 @@ public record DesglosePresupuestalDTO(
         BigDecimal grpNoviembre, BigDecimal precompNoviembre,
         // Diciembre
         BigDecimal grpDiciembre, BigDecimal precompDiciembre
-) {}
+) {
+    public BigDecimal obtenerTotalDisponible() {
+        return grpEnero.add(grpFebrero).add(grpMarzo).add(grpAbril)
+                .add(grpMayo).add(grpJunio).add(grpJulio).add(grpAgosto)
+                .add(grpSeptiembre).add(grpOctubre).add(grpNoviembre).add(grpDiciembre);
+    }
+
+    public BigDecimal obtenerTotalPrecomprometido() {
+        return precompEnero.add(precompFebrero).add(precompMarzo).add(precompAbril)
+                .add(precompMayo).add(precompJunio).add(precompJulio).add(precompAgosto)
+                .add(precompSeptiembre).add(precompOctubre).add(precompNoviembre).add(precompDiciembre);
+    }
+
+    public BigDecimal obtenerTotalNeto() {
+        return obtenerTotalDisponible().subtract(obtenerTotalPrecomprometido());
+    }
+}

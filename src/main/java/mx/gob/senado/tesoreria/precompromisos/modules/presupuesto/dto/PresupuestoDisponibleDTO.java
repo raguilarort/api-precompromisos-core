@@ -11,5 +11,9 @@ public record PresupuestoDisponibleDTO(
         BigDecimal disponibleSeptiembre, BigDecimal disponibleOctubre,
         BigDecimal disponibleNoviembre, BigDecimal disponibleDiciembre
 ) {
-
+    public BigDecimal obtenerTotal() {
+        return disponibleEnero.add(disponibleFebrero).add(disponibleMarzo).add(disponibleAbril)
+                .add(disponibleMayo).add(disponibleJunio).add(disponibleJulio).add(disponibleAgosto)
+                .add(disponibleSeptiembre).add(disponibleOctubre).add(disponibleNoviembre).add(disponibleDiciembre);
+    }
 }
