@@ -1,6 +1,5 @@
 package mx.gob.senado.tesoreria.precompromisos.modules.presupuesto.repository;
 
-import mx.gob.senado.tesoreria.precompromisos.modules.clavespresupuestarias.dto.DisponibilidadClavePresupuestariaDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.presupuesto.dto.PresupuestoDisponibleDTO;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
@@ -28,21 +27,20 @@ public class PresupuestoSAPFINRepository {
                 .withoutProcedureColumnMetaDataAccess()
                 .declareParameters(
                         new SqlParameter("p_ejercicio", Types.NUMERIC),
-                        new SqlOutParameter("p_resultado", Types.REF_CURSOR, (rs, rowNum) -> new DisponibilidadClavePresupuestariaDTO(
+                        new SqlOutParameter("p_resultado", Types.REF_CURSOR, (rs, rowNum) -> new PresupuestoDisponibleDTO(
                                 rs.getInt("CLAVE_PRESUPUESTARIA_ID"),
-                                rs.getDouble("PD1"),
-                                rs.getDouble("PD2"),
-                                rs.getDouble("PD3"),
-                                rs.getDouble("PD4"),
-                                rs.getDouble("PD5"),
-                                rs.getDouble("PD6"),
-                                rs.getDouble("PD7"),
-                                rs.getDouble("PD8"),
-                                rs.getDouble("PD9"),
-                                rs.getDouble("PD10"),
-                                rs.getDouble("PD11"),
-                                rs.getDouble("PD12"),
-                                rs.getDouble("TPD")
+                                rs.getBigDecimal("PD1"),
+                                rs.getBigDecimal("PD2"),
+                                rs.getBigDecimal("PD3"),
+                                rs.getBigDecimal("PD4"),
+                                rs.getBigDecimal("PD5"),
+                                rs.getBigDecimal("PD6"),
+                                rs.getBigDecimal("PD7"),
+                                rs.getBigDecimal("PD8"),
+                                rs.getBigDecimal("PD9"),
+                                rs.getBigDecimal("PD10"),
+                                rs.getBigDecimal("PD11"),
+                                rs.getBigDecimal("PD12")
                             )
                         )
                 );
@@ -54,21 +52,20 @@ public class PresupuestoSAPFINRepository {
                 .declareParameters(
                         new SqlParameter("p_ejercicio", Types.NUMERIC),
                         new SqlParameter("p_id_cve_presupuestaria", Types.NUMERIC),
-                        new SqlOutParameter("p_resultado", Types.REF_CURSOR, (rs, rowNum) -> new DisponibilidadClavePresupuestariaDTO(
+                        new SqlOutParameter("p_resultado", Types.REF_CURSOR, (rs, rowNum) -> new PresupuestoDisponibleDTO(
                                 rs.getInt("CLAVE_PRESUPUESTARIA_ID"),
-                                rs.getDouble("PD1"),
-                                rs.getDouble("PD2"),
-                                rs.getDouble("PD3"),
-                                rs.getDouble("PD4"),
-                                rs.getDouble("PD5"),
-                                rs.getDouble("PD6"),
-                                rs.getDouble("PD7"),
-                                rs.getDouble("PD8"),
-                                rs.getDouble("PD9"),
-                                rs.getDouble("PD10"),
-                                rs.getDouble("PD11"),
-                                rs.getDouble("PD12"),
-                                rs.getDouble("TPD")
+                                rs.getBigDecimal("PD1"),
+                                rs.getBigDecimal("PD2"),
+                                rs.getBigDecimal("PD3"),
+                                rs.getBigDecimal("PD4"),
+                                rs.getBigDecimal("PD5"),
+                                rs.getBigDecimal("PD6"),
+                                rs.getBigDecimal("PD7"),
+                                rs.getBigDecimal("PD8"),
+                                rs.getBigDecimal("PD9"),
+                                rs.getBigDecimal("PD10"),
+                                rs.getBigDecimal("PD11"),
+                                rs.getBigDecimal("PD12")
                             )
                         )
                 );

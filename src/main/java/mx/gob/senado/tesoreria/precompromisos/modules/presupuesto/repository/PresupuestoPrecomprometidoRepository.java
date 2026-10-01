@@ -14,7 +14,7 @@ import java.util.Map;
 
 @Repository
 public class PresupuestoPrecomprometidoRepository {
-    private static final String paquete = "SAPFIN_PA.PKG_CONTROL_PRESUP_PRECOMP";
+    private static final String paquete = "PKG_CONTROL_PRESUP_PRECOMP";
 
     private final SimpleJdbcCall getPresupuestoPrecomprometidoCall;
     private final SimpleJdbcCall getPresupuestoPrecomprometidoPorIdClavePresupuestariaCall;
@@ -29,7 +29,7 @@ public class PresupuestoPrecomprometidoRepository {
                 .declareParameters(
                         new SqlParameter("p_ejercicio", Types.NUMERIC),
                         new SqlOutParameter("p_resultado", Types.REF_CURSOR, (rs, rowNum) -> new PresupuestoPrecomprometidoDTO(
-                                rs.getInt("CLAVE_PRESUPUESTARIA_ID"),
+                                rs.getInt("ID_CLAVE_PRESUPUESTARIA"),
                                 rs.getBigDecimal("PRECOMP_ENE"), rs.getBigDecimal("PRECOMP_FEB"),
                                 rs.getBigDecimal("PRECOMP_MAR"), rs.getBigDecimal("PRECOMP_ABR"),
                                 rs.getBigDecimal("PRECOMP_MAY"), rs.getBigDecimal("PRECOMP_JUN"),
@@ -47,7 +47,7 @@ public class PresupuestoPrecomprometidoRepository {
                         new SqlParameter("p_ejercicio", Types.NUMERIC),
                         new SqlParameter("p_id_cve_presupuestaria", Types.NUMERIC),
                         new SqlOutParameter("p_resultado", Types.REF_CURSOR, (rs, rowNum) -> new PresupuestoPrecomprometidoDTO(
-                                rs.getInt("CLAVE_PRESUPUESTARIA_ID"),
+                                rs.getInt("ID_CLAVE_PRESUPUESTARIA"),
                                 rs.getBigDecimal("PRECOMP_ENE"), rs.getBigDecimal("PRECOMP_FEB"),
                                 rs.getBigDecimal("PRECOMP_MAR"), rs.getBigDecimal("PRECOMP_ABR"),
                                 rs.getBigDecimal("PRECOMP_MAY"), rs.getBigDecimal("PRECOMP_JUN"),

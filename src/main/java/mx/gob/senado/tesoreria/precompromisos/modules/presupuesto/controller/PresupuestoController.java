@@ -81,10 +81,9 @@ public class PresupuestoController {
     @GetMapping("/desglose-saldos/{idClavePresupuestaria}")
     @Operation(summary = "Obtener desglose orquestado (GRP + Precomprometido) para la UI")
     public ResponseEntity<DesglosePresupuestalDTO> consultarDesglosePorId(
-            @PathVariable Integer idClavePresupuestaria,
-            @RequestParam Integer ejercicio) {
+            @PathVariable Integer idClavePresupuestaria) {
         // Este endpoint llama internamente a los 2 repositorios y une el DTO como platicamos
-        return ResponseEntity.ok(service.consultarPresupuestos(ejercicio, idClavePresupuestaria));
+        return ResponseEntity.ok(service.consultarPresupuestos(0, idClavePresupuestaria));
     }
 
     @GetMapping(value = "/desglose-saldos", params = {"ejercicio", "unidad", "idCveProg", "idPartida", "idFuenteFin"})
