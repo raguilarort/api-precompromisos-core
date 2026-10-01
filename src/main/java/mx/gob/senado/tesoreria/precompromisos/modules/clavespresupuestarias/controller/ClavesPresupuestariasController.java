@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import mx.gob.senado.tesoreria.precompromisos.modules.clavespresupuestarias.dto.ClavePresupuestariaDTO;
-import mx.gob.senado.tesoreria.precompromisos.modules.clavespresupuestarias.dto.DisponibilidadClavePresupuestariaDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.clavespresupuestarias.dto.FiltroClavePresupuestariaDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.clavespresupuestarias.service.ClavesPresupuestariasService;
 import org.springdoc.core.annotations.ParameterObject;
@@ -35,22 +34,5 @@ public class ClavesPresupuestariasController {
     public ResponseEntity<ClavePresupuestariaDTO> buscarClavePresupuestaria(
             @ParameterObject @Valid FiltroClavePresupuestariaDTO filtro) {
         return ResponseEntity.ok(service.buscarClavePresupuestaria(filtro));
-    }
-
-    @GetMapping(value = "/disponibilidad", params = {"ejercicio", "unidad", "idCveProg", "idPartida", "idFuenteFin"})
-    @Operation(summary = "Verificar combinación y obtener disponibilidad mensual de una clave presupuestaria")
-    public ResponseEntity<DisponibilidadClavePresupuestariaDTO> consultarDisponibilidad(
-            @ParameterObject @Valid FiltroClavePresupuestariaDTO filtro) {
-
-        return ResponseEntity.ok(service.consultarDisponibilidad(filtro));
-    }
-
-    @GetMapping("/{idClavePresupuestaria}/disponibilidad")
-    @Operation(summary = "Obtener disponibilidad mensual de una clave presupuestaria")
-    public ResponseEntity<DisponibilidadClavePresupuestariaDTO> consultarDisponibilidadPorId(
-            @Parameter(description = "Identificador de la clave presupuestaria", example = "1119112")
-            @PathVariable(name = "idClavePresupuestaria") Integer idClavePresupuestaria) {
-
-        return ResponseEntity.ok(service.consultarDisponibilidadPorId(0, idClavePresupuestaria));
     }
 }

@@ -1,13 +1,11 @@
 package mx.gob.senado.tesoreria.precompromisos.modules.clavespresupuestarias.service;
 
 import mx.gob.senado.tesoreria.precompromisos.modules.clavespresupuestarias.dto.ClavePresupuestariaDTO;
-import mx.gob.senado.tesoreria.precompromisos.modules.clavespresupuestarias.dto.DisponibilidadClavePresupuestariaDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.clavespresupuestarias.dto.FiltroClavePresupuestariaDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.clavespresupuestarias.repository.ClavesPresupuestariasRepository;
 import mx.gob.senado.tesoreria.precompromisos.modules.clavespresupuestarias.exception.ClavePresupuestariaException;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -46,27 +44,5 @@ public class ClavesPresupuestariasService {
         }
 
         return resultados.getFirst();
-    }
-
-    public DisponibilidadClavePresupuestariaDTO consultarDisponibilidad(FiltroClavePresupuestariaDTO filtro) {
-
-        ClavePresupuestariaDTO claveExistente = this.buscarClavePresupuestaria(filtro);
-
-        return this.consultarDisponibilidadPorId(filtro.ejercicio(), claveExistente.clavePresupuestariaId());
-    }
-
-    public DisponibilidadClavePresupuestariaDTO consultarDisponibilidadPorId(Integer ejercicio, Integer idClavePresupuestaria) {
-
-        List<DisponibilidadClavePresupuestariaDTO> resultadosSaldos = repository.consultarDisponibilidad(ejercicio == 0 ? LocalDate.now().getYear() : ejercicio, idClavePresupuestaria);
-
-        if (resultadosSaldos == null || resultadosSaldos.isEmpty()) {
-            throw ClavePresupuestariaException.noHaySaldosPorMostrar(idClavePresupuestaria);
-        }
-
-        if (resultadosSaldos.size() > 1) {
-            throw ClavePresupuestariaException.multiplesSaldosEncontrados();
-        }
-
-        return resultadosSaldos.getFirst();
     }
 }

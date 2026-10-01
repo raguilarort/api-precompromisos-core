@@ -28,21 +28,9 @@ public class ClavePresupuestariaException extends RuntimeException {
         );
     }
 
-    public static ClavePresupuestariaException noHaySaldosPorMostrar(Integer idCvePresupuestaria) {
-        return new ClavePresupuestariaException(
-                "La combinación presupuestal (ID: " + idCvePresupuestaria + ") existe, pero aún no cuenta con disponibilidad o calendario de saldos registrado."
-        );
-    }
-
     public static ClavePresupuestariaException multiplesClavesEncontradas() {
         return new ClavePresupuestariaException(
                 "La combinación indicada presenta inconsistencias (más de un registro coincidente). Por favor, repórtelo con el administrador del sistema."
-        );
-    }
-
-    public static ClavePresupuestariaException multiplesSaldosEncontrados() {
-        return new ClavePresupuestariaException(
-                "La clave presupuestaria indicada presenta inconsistencias (más de un registro coincidente) en los saldos. Por favor, repórtelo con el administrador del sistema."
         );
     }
 }
