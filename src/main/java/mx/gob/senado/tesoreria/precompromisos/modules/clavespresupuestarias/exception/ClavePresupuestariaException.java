@@ -33,4 +33,10 @@ public class ClavePresupuestariaException extends RuntimeException {
                 "La combinación indicada presenta inconsistencias (más de un registro coincidente). Por favor, repórtelo con el administrador del sistema."
         );
     }
+
+    public static ClavePresupuestariaException ejercicioSinClavesPresupuestariasRegistradas() {
+        return new ClavePresupuestariaException(
+                "El ejercicio proporcionado no cuenta con claves presupuestarias habilitadas. Por favor, repórtelo con el administrador del sistema."
+        );
+    }
 }

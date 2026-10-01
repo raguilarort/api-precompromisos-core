@@ -45,4 +45,14 @@ public class ClavesPresupuestariasService {
 
         return resultados.getFirst();
     }
+
+    public List<ClavePresupuestariaDTO> listarClavesPresupuestarias(Integer ejercicio) {
+        List<ClavePresupuestariaDTO> resultados = repository.listarClavesPresupuestarias(ejercicio);
+
+        if (resultados == null || resultados.isEmpty()) {
+            throw ClavePresupuestariaException.ejercicioSinClavesPresupuestariasRegistradas();
+        }
+
+        return resultados;
+    }
 }

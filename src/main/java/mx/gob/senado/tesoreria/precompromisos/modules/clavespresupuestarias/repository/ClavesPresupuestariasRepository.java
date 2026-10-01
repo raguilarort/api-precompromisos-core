@@ -18,6 +18,7 @@ public class ClavesPresupuestariasRepository {
 
     private final SimpleJdbcCall getClavePresupuestariaPorIdCall;
     private final SimpleJdbcCall getClavePresupuestariaPorUEPPFFCall;
+    private final SimpleJdbcCall getClavePresupuestariaPorEjercicio;
 
     public ClavesPresupuestariasRepository(DataSource dataSource) {
         this.getClavePresupuestariaPorIdCall = new SimpleJdbcCall(dataSource)
@@ -80,6 +81,39 @@ public class ClavesPresupuestariasRepository {
                                 rs.getString("DESC_FUENTE_FIN")
                         ))
                 );
+
+        this.getClavePresupuestariaPorEjercicio = new SimpleJdbcCall(dataSource)
+                .withCatalogName(paqueteCvePresupuestaria)
+                .withProcedureName("SP_LISTAR_CP")
+                .withoutProcedureColumnMetaDataAccess()
+                .declareParameters(
+                        new SqlParameter("p_ejercicio", Types.NUMERIC),
+                        new SqlParameter("p_unidad_ejecutora", Types.VARCHAR),
+                        new SqlParameter("p_id_cve_prog", Types.NUMERIC),
+                        new SqlParameter("p_id_partida", Types.NUMERIC),
+                        new SqlParameter("p_id_fuente_fin", Types.NUMERIC),
+                        new SqlOutParameter("p_resultado", Types.REF_CURSOR, (rs, rowNum) -> new ClavePresupuestariaDTO(
+                                rs.getInt("CLAVE_PRESUPUESTARIA_ID"),
+                                rs.getString("CLAVE_PRESUPUESTARIA"),
+                                rs.getInt("ID_UNIDAD_ESTADO"),
+                                rs.getString("UNIDAD_EJECUTORA"),
+                                rs.getString("DESC_CORTA_UE"),
+                                rs.getInt("ESTADO"),
+                                rs.getString("DESC_ESTADO"),
+                                rs.getString("AMBITO"),
+                                rs.getString("DESC_AMBITO"),
+                                rs.getInt("ID_CVE_PROG"),
+                                rs.getString("CLAVE_PROGRAMATICA"),
+                                rs.getString("DESC_CVE_PROG"),
+                                rs.getString("FECHA_VIG_INI"),
+                                rs.getString("FECHA_VIG_FIN"),
+                                rs.getInt("ID_PARTIDA"),
+                                rs.getString("PARTIDA"),
+                                rs.getString("DESC_PARTIDA"),
+                                rs.getInt("ID_FUENTE_FIN"),
+                                rs.getString("DESC_FUENTE_FIN")
+                        ))
+                );
     }
 
     /**
@@ -106,6 +140,15 @@ public class ClavesPresupuestariasRepository {
                 .addValue("p_id_fuente_fin", idFuenteFin);
 
         Map<String, Object> out = getClavePresupuestariaPorUEPPFFCall.execute(in);
+
+        return (List<ClavePresupuestariaDTO>) out.get("p_resultado");
+    }
+
+    public List<ClavePresupuestariaDTO> listarClavesPresupuestarias(Integer ejercicio) {
+        MapSqlParameterSource in = new MapSqlParameterSource()
+                .addValue("p_ejercicio", ejercicio);
+
+        Map<String, Object> out = getClavePresupuestariaPorEjercicio.execute(in);
 
         return (List<ClavePresupuestariaDTO>) out.get("p_resultado");
     }
