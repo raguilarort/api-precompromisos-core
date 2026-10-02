@@ -2,7 +2,6 @@ package mx.gob.senado.tesoreria.precompromisos.modules.presupuesto.service;
 
 import mx.gob.senado.tesoreria.precompromisos.modules.clavespresupuestarias.dto.ClavePresupuestariaDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.clavespresupuestarias.dto.FiltroClavePresupuestariaDTO;
-import mx.gob.senado.tesoreria.precompromisos.modules.clavespresupuestarias.exception.ClavePresupuestariaException;
 import mx.gob.senado.tesoreria.precompromisos.modules.clavespresupuestarias.service.ClavesPresupuestariasService;
 import mx.gob.senado.tesoreria.precompromisos.modules.presupuesto.dto.DesglosePresupuestalDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.presupuesto.dto.PresupuestoDisponibleDTO;
@@ -54,7 +53,7 @@ public class PresupuestoService {
         }
 
         if (resultadosSaldos.size() > 1) {
-            throw ClavePresupuestariaException.multiplesSaldosEncontrados();
+            throw PresupuestoDisponibleException.multiplesSaldosEncontrados();
         }
 
         return resultadosSaldos.getFirst();

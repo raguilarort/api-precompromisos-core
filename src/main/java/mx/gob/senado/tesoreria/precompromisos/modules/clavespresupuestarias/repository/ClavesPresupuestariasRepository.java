@@ -88,10 +88,6 @@ public class ClavesPresupuestariasRepository {
                 .withoutProcedureColumnMetaDataAccess()
                 .declareParameters(
                         new SqlParameter("p_ejercicio", Types.NUMERIC),
-                        new SqlParameter("p_unidad_ejecutora", Types.VARCHAR),
-                        new SqlParameter("p_id_cve_prog", Types.NUMERIC),
-                        new SqlParameter("p_id_partida", Types.NUMERIC),
-                        new SqlParameter("p_id_fuente_fin", Types.NUMERIC),
                         new SqlOutParameter("p_resultado", Types.REF_CURSOR, (rs, rowNum) -> new ClavePresupuestariaDTO(
                                 rs.getInt("CLAVE_PRESUPUESTARIA_ID"),
                                 rs.getString("CLAVE_PRESUPUESTARIA"),
