@@ -47,7 +47,7 @@ public class SeguimientoRepository {
                 .withProcedureName("SP_CONSULTA_ACTIVIDAD_RECIENTE")
                 .withoutProcedureColumnMetaDataAccess()
                 .declareParameters(
-                        new SqlParameter("p_id_precompromiso", Types.NUMERIC),
+                        new SqlParameter("p_ejercicio", Types.NUMERIC),
                         new SqlParameter("p_id_usuario", Types.NUMERIC),
                         new SqlOutParameter("p_cursor", Types.REF_CURSOR, (rs, rowNum) -> new ActividadRecienteDTO(
                                 rs.getInt("id_precompromiso"),
