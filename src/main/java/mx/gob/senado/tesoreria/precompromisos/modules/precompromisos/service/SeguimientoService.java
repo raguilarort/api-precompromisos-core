@@ -1,5 +1,6 @@
 package mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.service;
 
+import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.ActividadRecienteDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.SeguimientoOperativoDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.repository.SeguimientoRepository;
 import mx.gob.senado.tesoreria.precompromisos.security.utils.SecurityUtils;
@@ -22,5 +23,11 @@ public class SeguimientoService {
         // Aquí podrías agregar validaciones de seguridad (SecurityUtils) si un usuario
         // intenta ver la bitácora de una unidad a la que no tiene acceso.
         return repository.consultarPorPrecompromiso(idPrecompromiso, idUsuario);
+    }
+
+    public List<ActividadRecienteDTO> obtenerUltimosMovimientos(Integer ejercicio, Integer limiteMax) {
+        Integer idUsuario = SecurityUtils.obtenerIdUsuarioLogueado();
+
+        return repository.consultarActividadReciente(ejercicio, idUsuario).stream().limit(limiteMax).toList();
     }
 }

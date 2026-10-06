@@ -1,5 +1,6 @@
 package mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.repository;
 
+import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.ActividadRecienteDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.SeguimientoOperativoDTO;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
@@ -18,6 +19,7 @@ public class SeguimientoRepository {
     private static final String paqueteConsulta = "PKG_PRECOMPROMISO_QRY";
 
     private final SimpleJdbcCall consultarSeguimientoCall;
+    private final SimpleJdbcCall consultarActividadRecienteCall;
 
     public SeguimientoRepository(DataSource dataSource) {
         this.consultarSeguimientoCall = new SimpleJdbcCall(dataSource)
@@ -39,6 +41,23 @@ public class SeguimientoRepository {
                                 rs.getString("observaciones")
                         ))
                 );
+
+        this.consultarActividadRecienteCall = new SimpleJdbcCall(dataSource)
+                .withCatalogName(paqueteConsulta)
+                .withProcedureName("SP_CONSULTA_ACTIVIDAD_RECIENTE")
+                .withoutProcedureColumnMetaDataAccess()
+                .declareParameters(
+                        new SqlParameter("p_id_precompromiso", Types.NUMERIC),
+                        new SqlParameter("p_id_usuario", Types.NUMERIC),
+                        new SqlOutParameter("p_cursor", Types.REF_CURSOR, (rs, rowNum) -> new ActividadRecienteDTO(
+                                rs.getInt("id_precompromiso"),
+                                rs.getString("folio"),
+                                rs.getInt("id_estatus"),
+                                rs.getString("estatus_descripcion"),
+                                rs.getString("nombre_servidor_publico"),
+                                rs.getString("fecha_movimiento")
+                        ))
+                );
     }
 
     @SuppressWarnings("unchecked")
@@ -49,5 +68,15 @@ public class SeguimientoRepository {
 
         Map<String, Object> out = consultarSeguimientoCall.execute(in);
         return (List<SeguimientoOperativoDTO>) out.get("p_cursor");
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<ActividadRecienteDTO> consultarActividadReciente(Integer ejercicio, Integer idUsuario) {
+        MapSqlParameterSource in = new MapSqlParameterSource()
+                .addValue("p_ejercicio", ejercicio)
+                .addValue("p_id_usuario", idUsuario);
+
+        Map<String, Object> out = consultarActividadRecienteCall.execute(in);
+        return (List<ActividadRecienteDTO>) out.get("p_cursor");
     }
 }
