@@ -2,7 +2,6 @@ package mx.gob.senado.tesoreria.precompromisos.modules.dashboard.service;
 
 import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.ActividadRecienteDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.service.SeguimientoService;
-import mx.gob.senado.tesoreria.precompromisos.security.utils.SecurityUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

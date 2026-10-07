@@ -1,10 +1,7 @@
 package mx.gob.senado.tesoreria.precompromisos.modules.avisos.repository;
 
 import mx.gob.senado.tesoreria.precompromisos.modules.avisos.dto.AvisoDTO;
-import mx.gob.senado.tesoreria.precompromisos.modules.precompromisos.dto.SeguimientoOperativoDTO;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SqlOutParameter;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
