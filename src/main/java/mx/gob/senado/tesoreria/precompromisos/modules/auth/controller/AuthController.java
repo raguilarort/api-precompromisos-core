@@ -5,15 +5,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import mx.gob.senado.tesoreria.precompromisos.modules.auth.dto.AuthRequestDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.auth.dto.UserInfoDTO;
 import mx.gob.senado.tesoreria.precompromisos.modules.auth.service.AuthService;
+import mx.gob.senado.tesoreria.precompromisos.security.UsuarioPrincipal;
 import mx.gob.senado.tesoreria.precompromisos.security.audit.SecurityAuditService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.Base64;
 import java.util.Map;
 
@@ -82,12 +83,19 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> refreshToken(HttpServletRequest request, Principal principal) {
-        if (principal == null || principal.getName() == null) {
+    public ResponseEntity<?> refreshToken(HttpServletRequest request, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Sesión no válida"));
         }
 
-        String correo = principal.getName(); // El filtro JWT coloca aquí el correo
+        UsuarioPrincipal usuario = (UsuarioPrincipal) authentication.getPrincipal();
+
+        if (usuario == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "No se pudo extraer la identidad del token."));
+        }
+
+        String correo = usuario.email();
 
         String ip = request.getHeader("X-Forwarded-For");
         if (ip == null || ip.isEmpty()) ip = request.getRemoteAddr();
@@ -95,12 +103,38 @@ public class AuthController {
 
         try {
             UserInfoDTO userInfo = authService.procesarRefreshSession(correo, ip, userAgent);
-            return ResponseEntity.ok(Map.of("token", userInfo.accessToken())); // Angular solo necesita el token
+            return ResponseEntity.ok(Map.of("token", userInfo.accessToken()));
         } catch (SecurityException se) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", se.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Error renovando token: " + e.getMessage()));
         }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestBody Map<String, String> payload, HttpServletRequest request, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Sesión no válida"));
+        }
+
+        UsuarioPrincipal usuario = (UsuarioPrincipal) authentication.getPrincipal();
+
+        if (usuario == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "No se pudo extraer la identidad del token."));
+        }
+
+        String correo = usuario.email();
+
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.isEmpty()) ip = request.getRemoteAddr();
+        String userAgent = request.getHeader("User-Agent");
+
+        String motivo = payload.getOrDefault("motivo", "CIERRE_MANUAL");
+
+        authService.procesarLogout(correo, ip, userAgent, motivo);
+
+        return ResponseEntity.ok().build();
     }
 }

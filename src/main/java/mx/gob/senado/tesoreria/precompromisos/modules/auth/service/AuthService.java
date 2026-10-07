@@ -78,4 +78,18 @@ public class AuthService {
 
         return new UserInfoDTO(idUsuario, numEmpleado, correo, roles, unidades, nuevoAccessToken, "Bearer");
     }
+
+    public void procesarLogout(String correo, String ip, String userAgent, String motivo) {
+        // 1. Llamamos al Stored Procedure
+        Map<String, Object> out = authRepository.ejecutarLogout(correo, ip, userAgent, motivo);
+
+        // Dependiendo del driver JDBC, los keys pueden regresar en mayúsculas
+        Number estatus = (Number) out.getOrDefault("P_ESTATUS", out.get("p_estatus"));
+        String mensaje = (String) out.getOrDefault("P_MENSAJE", out.get("p_mensaje"));
+
+        // 2. Evaluamos el estatus que dictó la base de datos
+        if (estatus == null || estatus.intValue() != 200) {
+            throw new SecurityException(mensaje != null ? mensaje : "Ocurrió un error durante el registro del cierre de sesión.");
+        }
+    }
 }

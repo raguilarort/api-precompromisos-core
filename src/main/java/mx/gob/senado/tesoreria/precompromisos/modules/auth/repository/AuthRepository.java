@@ -16,6 +16,7 @@ public class AuthRepository {
 
     private final SimpleJdbcCall loginSimpleJdbcCall;
     private final SimpleJdbcCall refreshSessionJdbcCall;
+    private final SimpleJdbcCall logoutSimpleJdbcCall;
 
     public AuthRepository(DataSource dataSource) {
 
@@ -57,6 +58,21 @@ public class AuthRepository {
                         new SqlOutParameter("p_estatus", Types.NUMERIC),
                         new SqlOutParameter("p_mensaje", Types.VARCHAR)
                 );
+
+        this.logoutSimpleJdbcCall = new SimpleJdbcCall(dataSource)
+                .withCatalogName(PAQUETE)
+                .withProcedureName("SP_LOGOUT")
+                .withoutProcedureColumnMetaDataAccess() // Apagamos la lectura de metadata de Oracle
+                .declareParameters(
+                        // 1. Parámetros de Entrada (IN)
+                        new SqlParameter("p_correo", Types.VARCHAR),
+                        new SqlParameter("p_ip", Types.VARCHAR),
+                        new SqlParameter("p_user_agent", Types.VARCHAR),
+                        new SqlParameter("p_motivo", Types.VARCHAR),
+                        // 4. Parámetros de Estado (OUT)
+                        new SqlOutParameter("p_estatus", Types.NUMERIC),
+                        new SqlOutParameter("p_mensaje", Types.VARCHAR)
+                );
     }
 
     public Map<String, Object> ejecutarLogin(String correo, String ip, String userAgent) {
@@ -74,5 +90,15 @@ public class AuthRepository {
                 .addValue("p_ip", ip)
                 .addValue("p_user_agent", userAgent);
         return refreshSessionJdbcCall.execute(in);
+    }
+
+    public Map<String, Object> ejecutarLogout(String correo, String ip, String userAgent, String motivo) {
+        MapSqlParameterSource in = new MapSqlParameterSource()
+                .addValue("p_correo", correo)
+                .addValue("p_ip", ip)
+                .addValue("p_user_agent", userAgent)
+                .addValue("p_motivo", motivo);
+
+        return logoutSimpleJdbcCall.execute(in);
     }
 }
