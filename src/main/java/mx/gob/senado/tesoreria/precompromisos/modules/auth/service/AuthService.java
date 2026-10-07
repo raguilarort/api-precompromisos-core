@@ -55,4 +55,27 @@ public class AuthService {
                 "Bearer"
         );
     }
+
+    public UserInfoDTO procesarRefreshSession(String correo, String ip, String userAgent) {
+        Map<String, Object> out = authRepository.ejecutarRefresh(correo, ip, userAgent);
+
+        Number estatus = (Number) out.getOrDefault("P_ESTATUS", out.get("p_estatus"));
+        String mensaje = (String) out.getOrDefault("P_MENSAJE", out.get("p_mensaje"));
+
+        if (estatus == null || estatus.intValue() != 200) {
+            throw new SecurityException(mensaje != null ? mensaje : "Renovación denegada.");
+        }
+
+        Number idUsuarioNumber = (Number) out.getOrDefault("P_ID_USUARIO", out.get("p_id_usuario"));
+        Number numEmpleadoNumber = (Number) out.getOrDefault("P_NUM_EMPLEADO", out.get("p_num_empleado"));
+        List<String> roles = (List<String>) out.getOrDefault("P_ROLES", out.get("p_roles"));
+        List<String> unidades = (List<String>) out.getOrDefault("P_UNIDADES", out.get("p_unidades"));
+
+        Long idUsuario = (idUsuarioNumber != null) ? idUsuarioNumber.longValue() : null;
+        Long numEmpleado = (numEmpleadoNumber != null) ? numEmpleadoNumber.longValue() : null;
+
+        String nuevoAccessToken = tokenProvider.generateToken(idUsuario, correo, roles, unidades, numEmpleado);
+
+        return new UserInfoDTO(idUsuario, numEmpleado, correo, roles, unidades, nuevoAccessToken, "Bearer");
+    }
 }

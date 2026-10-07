@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.Base64;
 import java.util.Map;
 
@@ -77,6 +78,29 @@ public class AuthController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Error procesando la autenticación: " + e.getMessage()));
+        }
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(HttpServletRequest request, Principal principal) {
+        if (principal == null || principal.getName() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Sesión no válida"));
+        }
+
+        String correo = principal.getName(); // El filtro JWT coloca aquí el correo
+
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.isEmpty()) ip = request.getRemoteAddr();
+        String userAgent = request.getHeader("User-Agent");
+
+        try {
+            UserInfoDTO userInfo = authService.procesarRefreshSession(correo, ip, userAgent);
+            return ResponseEntity.ok(Map.of("token", userInfo.accessToken())); // Angular solo necesita el token
+        } catch (SecurityException se) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", se.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error renovando token: " + e.getMessage()));
         }
     }
 }

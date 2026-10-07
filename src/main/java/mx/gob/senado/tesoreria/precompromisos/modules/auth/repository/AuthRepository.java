@@ -12,12 +12,15 @@ import java.util.Map;
 
 @Repository
 public class AuthRepository {
+    private static final String PAQUETE = "PKG_PRECOMP_SEGURIDAD";
 
     private final SimpleJdbcCall loginSimpleJdbcCall;
+    private final SimpleJdbcCall refreshSessionJdbcCall;
 
     public AuthRepository(DataSource dataSource) {
+
         this.loginSimpleJdbcCall = new SimpleJdbcCall(dataSource)
-                .withCatalogName("PKG_PRECOMP_SEGURIDAD")
+                .withCatalogName(PAQUETE)
                 .withProcedureName("SP_LOGIN")
                 .withoutProcedureColumnMetaDataAccess() // Apagamos la lectura de metadata de Oracle
                 .declareParameters(
@@ -38,6 +41,22 @@ public class AuthRepository {
                         new SqlOutParameter("p_estatus", Types.NUMERIC),
                         new SqlOutParameter("p_mensaje", Types.VARCHAR)
                 );
+
+        this.refreshSessionJdbcCall = new SimpleJdbcCall(dataSource)
+                .withCatalogName(PAQUETE)
+                .withProcedureName("SP_REFRESH_TOKEN")
+                .withoutProcedureColumnMetaDataAccess() // Apagamos la lectura de metadata de Oracle
+                .declareParameters(
+                        new SqlParameter("p_correo", Types.VARCHAR),
+                        new SqlParameter("p_ip", Types.VARCHAR),
+                        new SqlParameter("p_user_agent", Types.VARCHAR),
+                        new SqlOutParameter("p_id_usuario", Types.NUMERIC),
+                        new SqlOutParameter("p_num_empleado", Types.NUMERIC),
+                        new SqlOutParameter("p_roles", Types.REF_CURSOR, (rs, rowNum) -> rs.getString("CLAVE")),
+                        new SqlOutParameter("p_unidades", Types.REF_CURSOR, (rs, rowNum) -> rs.getString("UNIDAD_EJECUTORA")),
+                        new SqlOutParameter("p_estatus", Types.NUMERIC),
+                        new SqlOutParameter("p_mensaje", Types.VARCHAR)
+                );
     }
 
     public Map<String, Object> ejecutarLogin(String correo, String ip, String userAgent) {
@@ -47,5 +66,13 @@ public class AuthRepository {
                 .addValue("p_user_agent", userAgent);
 
         return loginSimpleJdbcCall.execute(in);
+    }
+
+    public Map<String, Object> ejecutarRefresh(String correo, String ip, String userAgent) {
+        MapSqlParameterSource in = new MapSqlParameterSource()
+                .addValue("p_correo", correo)
+                .addValue("p_ip", ip)
+                .addValue("p_user_agent", userAgent);
+        return refreshSessionJdbcCall.execute(in);
     }
 }
