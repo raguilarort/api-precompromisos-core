@@ -72,16 +72,16 @@ public class ReporteSituacionPresupuestalService {
                     catalogo.clavePresupuestaria() : "N/D";
 
             // --- CÁLCULO DE TOTALES ANUALES ---
-            BigDecimal totalDisponible = presupuestoDisponible.obtenerTotal();
+            BigDecimal totalDisponibleSAPFIN = presupuestoDisponible.obtenerTotal();
             BigDecimal totalPrecomprometido = presupuestoPrecomprometido.obtenerTotal();
-            BigDecimal totalNeto = totalDisponible.subtract(totalPrecomprometido);
+            BigDecimal totalDisponibleNeto = totalDisponibleSAPFIN.subtract(totalPrecomprometido);
 
             // --- ENSAMBLE DEL DTO FINAL ---
             return new SituacionPresupuestalAnualPorClaveDTO(
                     idClave, claveFormateada,
                     uText, pText, parText, fText, // Se inyectan las descripciones del catálogo
 
-                    totalDisponible, totalPrecomprometido, totalNeto,
+                    totalDisponibleSAPFIN, totalPrecomprometido, totalDisponibleNeto,
 
                     // GRP Mes a Mes
                     presupuestoDisponible.disponibleEnero(), presupuestoDisponible.disponibleFebrero(), presupuestoDisponible.disponibleMarzo(),

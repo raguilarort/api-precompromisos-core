@@ -13,7 +13,7 @@ public record SituacionPresupuestalAnualPorClaveDTO(
         // Totales Anuales
         BigDecimal totalDisponibleSAPFIN,
         BigDecimal totalPrecomprometido,
-        BigDecimal totalNeto,
+        BigDecimal totalDisponibleNeto,
 
         // Meses GRP
         BigDecimal disponibleSAPFINEnero, BigDecimal disponibleSAPFINFebrero, BigDecimal disponibleSAPFINMarzo,
@@ -28,8 +28,8 @@ public record SituacionPresupuestalAnualPorClaveDTO(
         BigDecimal precomprometidoOctubre, BigDecimal precomprometidoNoviembre, BigDecimal precomprometidoDiciembre,
 
         // Meses Neto
-        BigDecimal netoEnero, BigDecimal netoFebrero, BigDecimal netoMarzo,
-        BigDecimal netoAbril, BigDecimal netoMayo, BigDecimal netoJunio,
-        BigDecimal netoJulio, BigDecimal netoAgosto, BigDecimal netoSeptiembre,
-        BigDecimal netoOctubre, BigDecimal netoNoviembre, BigDecimal netoDiciembre
+        BigDecimal disponibleNetoEnero, BigDecimal disponibleNetoFebrero, BigDecimal disponibleNetoMarzo,
+        BigDecimal disponibleNetoAbril, BigDecimal disponibleNetoMayo, BigDecimal disponibleNetoJunio,
+        BigDecimal disponibleNetoJulio, BigDecimal disponibleNetoAgosto, BigDecimal disponibleNetoSeptiembre,
+        BigDecimal disponibleNetoOctubre, BigDecimal disponibleNetoNoviembre, BigDecimal disponibleNetoDiciembre
 ) {}
